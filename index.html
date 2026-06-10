@@ -7,17 +7,49 @@
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
-        html, body { height: 100%; margin: 0; padding: 0; }
+        html, body { height: 100%; margin: 0; padding: 0; font-family: sans-serif; }
         #map { height: 100%; }
+        #controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+            width: 250px;
+        }
+        button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #c82333;
+        }
     </style>
 </head>
 <body>
+    <div id="controls">
+        <h3 style="margin-top: 0;">Outbreak Tracker</h3>
+        <p style="font-size: 14px; color: #555;">Click anywhere on the map to log a new simulated case.</p>
+        <p style="font-size: 14px; color: #555;">Drag existing pins to update coordinates.</p>
+        <button id="clearBtn">Clear All Cases</button>
+    </div>
+    
     <div id="map"></div>
     
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         // 1. Initialize the map
-        var map = L.map('map').setView([22.314, 87.310], 14);
+        var map = L.map('map').setView([22.314, 87.310], 15);
 
         // 2. Add the free OpenStreetMap tiles
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -26,7 +58,7 @@
         }).addTo(map);
 
         // 3. Simulated Outbreak Data (Lat, Lng)
-        var outbreakCases = [
+        var initialCases = [
             [22.3149, 87.3105], 
             [22.3155, 87.3151], 
             [22.3121, 87.3120], 
@@ -34,43 +66,28 @@
             [22.3135, 87.3135]
         ];
 
-        // Plot individual cases as red dots
-        outbreakCases.forEach(function(coord) {
-            L.circleMarker(coord, {
-                color: 'red',
-                radius: 5,
-                fillOpacity: 0.8
-            }).bindPopup("Simulated Case").addTo(map);
-        });
+        var markers = [];
+        var outbreakZone = null;
 
         // 4. JavaScript Convex Hull Algorithm (Monotone Chain)
         function getConvexHull(points) {
-            // Create a copy and sort by Longitude (x), then Latitude (y)
             let sorted = points.slice().sort((a, b) => a[1] === b[1] ? a[0] - b[0] : a[1] - b[1]);
-            
             if (sorted.length <= 1) return sorted;
 
-            // Cross product to determine turn direction
             const cross = (o, a, b) => {
                 return (a[1] - o[1]) * (b[0] - o[0]) - (a[0] - o[0]) * (b[1] - o[1]);
             };
 
-            // Build lower hull
             let lower = [];
             for (let p of sorted) {
-                while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], p) <= 0) {
-                    lower.pop();
-                }
+                while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], p) <= 0) lower.pop();
                 lower.push(p);
             }
 
-            // Build upper hull
             let upper = [];
             for (let i = sorted.length - 1; i >= 0; i--) {
                 let p = sorted[i];
-                while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], p) <= 0) {
-                    upper.pop();
-                }
+                while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], p) <= 0) upper.pop();
                 upper.push(p);
             }
 
@@ -79,18 +96,85 @@
             return lower.concat(upper);
         }
 
-        // 5. Calculate and draw the spatial footprint
-        var hullCoordinates = getConvexHull(outbreakCases);
+        // 5. Function to dynamically draw/redraw the footprint
+        function updateSpatialFootprint() {
+            // Extract current coordinates from all markers
+            var currentPoints = markers.map(function(m) {
+                return [m.getLatLng().lat, m.getLatLng().lng];
+            });
 
-        var outbreakZone = L.polygon(hullCoordinates, {
-            color: '#ff0000',
-            weight: 2,
-            fillColor: '#ff0000',
-            fillOpacity: 0.2
-        }).addTo(map);
+            // Remove the old polygon if it exists
+            if (outbreakZone) {
+                map.removeLayer(outbreakZone);
+                outbreakZone = null;
+            }
 
-        // 6. Auto-zoom map to fit the outbreak zone perfectly
-        map.fitBounds(outbreakZone.getBounds());
+            // Calculate the new hull
+            var hullCoordinates = getConvexHull(currentPoints);
+
+            // Only draw polygon if there are 3 or more points
+            if (hullCoordinates.length >= 3) {
+                outbreakZone = L.polygon(hullCoordinates, {
+                    color: '#ff0000',
+                    weight: 2,
+                    fillColor: '#ff0000',
+                    fillOpacity: 0.2
+                }).addTo(map);
+            }
+        }
+
+        // 6. Initialize markers and make them draggable
+        initialCases.forEach(function(coord) {
+            var marker = L.marker(coord, {
+                draggable: true 
+            }).addTo(map);
+            
+            marker.on('drag', function() {
+                updateSpatialFootprint();
+            });
+
+            markers.push(marker);
+        });
+
+        // 7. Click to add new cases dynamically
+        map.on('click', function(e) {
+            var newCoord = [e.latlng.lat, e.latlng.lng];
+            var marker = L.marker(newCoord, {
+                draggable: true
+            }).addTo(map);
+            
+            // Ensure the new marker updates the polygon when dragged
+            marker.on('drag', function() {
+                updateSpatialFootprint();
+            });
+            
+            markers.push(marker);
+            
+            // Redraw the footprint immediately upon adding
+            updateSpatialFootprint();
+        });
+
+        // 8. Clear all cases
+        document.getElementById('clearBtn').addEventListener('click', function() {
+            // Remove all markers from the map
+            markers.forEach(function(m) {
+                map.removeLayer(m);
+            });
+            // Empty the array
+            markers = [];
+            
+            // Remove the polygon
+            if (outbreakZone) {
+                map.removeLayer(outbreakZone);
+                outbreakZone = null;
+            }
+        });
+
+        // Initial draw and zoom
+        updateSpatialFootprint();
+        if (outbreakZone) {
+            map.fitBounds(outbreakZone.getBounds(), { padding: [50, 50] });
+        }
     </script>
 </body>
 </html>
