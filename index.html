@@ -57,14 +57,18 @@
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // 3. Simulated Outbreak Data (Lat, Lng)
-        var initialCases = [
+        // 3. PERSISTENCE: Check browser storage, or use default cases
+        var defaultCases = [
             [22.3149, 87.3105], 
             [22.3155, 87.3151], 
             [22.3121, 87.3120], 
             [22.3160, 87.3110],
             [22.3135, 87.3135]
         ];
+
+        // Load from memory if it exists, otherwise use defaults
+        var savedData = localStorage.getItem('outbreakTrackerData');
+        var activeCases = savedData ? JSON.parse(savedData) : defaultCases;
 
         var markers = [];
         var outbreakZone = null;
@@ -96,23 +100,22 @@
             return lower.concat(upper);
         }
 
-        // 5. Function to dynamically draw/redraw the footprint
+        // 5. Function to dynamically draw/redraw and SAVE the footprint
         function updateSpatialFootprint() {
-            // Extract current coordinates from all markers
             var currentPoints = markers.map(function(m) {
                 return [m.getLatLng().lat, m.getLatLng().lng];
             });
 
-            // Remove the old polygon if it exists
+            // Save the current state to the browser's local storage
+            localStorage.setItem('outbreakTrackerData', JSON.stringify(currentPoints));
+
             if (outbreakZone) {
                 map.removeLayer(outbreakZone);
                 outbreakZone = null;
             }
 
-            // Calculate the new hull
             var hullCoordinates = getConvexHull(currentPoints);
 
-            // Only draw polygon if there are 3 or more points
             if (hullCoordinates.length >= 3) {
                 outbreakZone = L.polygon(hullCoordinates, {
                     color: '#ff0000',
@@ -123,11 +126,9 @@
             }
         }
 
-        // 6. Initialize markers and make them draggable
-        initialCases.forEach(function(coord) {
-            var marker = L.marker(coord, {
-                draggable: true 
-            }).addTo(map);
+        // 6. Initialize markers from memory and make them draggable
+        activeCases.forEach(function(coord) {
+            var marker = L.marker(coord, { draggable: true }).addTo(map);
             
             marker.on('drag', function() {
                 updateSpatialFootprint();
@@ -139,35 +140,28 @@
         // 7. Click to add new cases dynamically
         map.on('click', function(e) {
             var newCoord = [e.latlng.lat, e.latlng.lng];
-            var marker = L.marker(newCoord, {
-                draggable: true
-            }).addTo(map);
+            var marker = L.marker(newCoord, { draggable: true }).addTo(map);
             
-            // Ensure the new marker updates the polygon when dragged
             marker.on('drag', function() {
                 updateSpatialFootprint();
             });
             
             markers.push(marker);
-            
-            // Redraw the footprint immediately upon adding
             updateSpatialFootprint();
         });
 
-        // 8. Clear all cases
+        // 8. Clear all cases and wipe memory
         document.getElementById('clearBtn').addEventListener('click', function() {
-            // Remove all markers from the map
-            markers.forEach(function(m) {
-                map.removeLayer(m);
-            });
-            // Empty the array
+            markers.forEach(function(m) { map.removeLayer(m); });
             markers = [];
             
-            // Remove the polygon
             if (outbreakZone) {
                 map.removeLayer(outbreakZone);
                 outbreakZone = null;
             }
+            
+            // Wipe the saved data so it doesn't reload on refresh
+            localStorage.removeItem('outbreakTrackerData');
         });
 
         // Initial draw and zoom
