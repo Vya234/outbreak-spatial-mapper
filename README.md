@@ -3,6 +3,8 @@
 ## Project Overview
 This repository contains a GIS-based web application designed to model and analyze disease outbreaks. It dynamically generates the minimum bounding area (spatial footprint) of an infection cluster using geographic coordinate points and provides real-time geospatial metrics.
 
+![Outbreak Tracker Interface](demo.png)
+
 ## Features & Architecture
 * **Algorithmic Engine**: Implements the Monotone Chain convex hull algorithm natively in JavaScript to compute the smallest enclosing polygon around simulated case coordinates.
 * **Web-GIS Interface**: An interactive frontend utilizing Leaflet.js and OpenStreetMap tiles for local rendering, complete with drag-and-drop map pins and dynamic threat-level visualization.
