@@ -31,3 +31,9 @@
 * **Actions Taken:** * Developed a dynamic severity indicator logic block within the JavaScript rendering loop.
   * Mapped the Leaflet polygon's color hex codes and opacity to the total node count (e.g., < 5 Warning, > 5 Escalated, > 10 Critical).
   * Built an overlay UI panel to continuously output the active case count and real-time Threat Level to the researcher.
+
+  ## June 30, 2026
+* **Objective:** Evolve the visual prototype into a robust spatial analytics tool with data export capabilities.
+* **Actions Taken:** * Integrated the Turf.js library to handle native browser-based spatial mathematics without needing a backend server.
+  * Engineered dynamic area calculation logic to compute and display the exact geographic footprint (in km²) of the infection boundary in real-time.
+  * Built a data export module allowing researchers to seamlessly download the active coordinate cluster as a standard `.csv` file for secondary analysis.

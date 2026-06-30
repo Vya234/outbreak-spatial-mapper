@@ -1,13 +1,11 @@
-# Spatial Footprint Mapper for Disease Outbreaks
+# Spatial Analytics Engine for Disease Outbreaks
 
 ## Project Overview
-This repository contains the foundational prototyping for a GIS-based web application designed to model disease outbreaks. The core objective is to generate and visualize the minimum bounding area (spatial footprint) of an infection cluster using a set of geographic coordinate points.
+This repository contains a GIS-based web application designed to model and analyze disease outbreaks. It dynamically generates the minimum bounding area (spatial footprint) of an infection cluster using geographic coordinate points and provides real-time geospatial metrics.
 
-## Architecture & Current Prototypes
-The development is currently split into two modules:
-1. **Algorithmic Engine (`convex_hull.py`)**: A Python implementation of the Monotone Chain algorithm. This serves as the mathematical foundation to compute the smallest enclosing polygon around simulated case coordinates.
-2. **Web-GIS Interface (`index.html`)**: A local frontend prototype utilizing Leaflet.js and OpenStreetMap tiles to render the base geographical environment.
-
-## Next Steps
-- Translate the Python convex hull logic into JavaScript.
-- Dynamically render the calculated outbreak polygon as a vector overlay on the Leaflet map instance.
+## Features & Architecture
+* **Algorithmic Engine**: Implements the Monotone Chain convex hull algorithm natively in JavaScript to compute the smallest enclosing polygon around simulated case coordinates.
+* **Web-GIS Interface**: An interactive frontend utilizing Leaflet.js and OpenStreetMap tiles for local rendering, complete with drag-and-drop map pins and dynamic threat-level visualization.
+* **Geospatial Analytics**: Integrates Turf.js to calculate and display the exact geographic area (km²) of the infection zone in real-time.
+* **Data Portability**: Features a CSV export module allowing researchers to seamlessly download active coordinate clusters for secondary data analysis in Python or R.
+* **State Management**: Utilizes HTML5 `localStorage` to ensure mapped coordinate arrays persist seamlessly across browser sessions.
