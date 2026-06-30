@@ -20,27 +20,47 @@
             box-shadow: 0 2px 15px rgba(0,0,0,0.2);
             width: 250px;
         }
+        .stat-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+        }
         button {
             width: 100%;
             padding: 8px;
             margin-top: 10px;
-            background-color: #dc3545;
+            background-color: #6c757d;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
         }
-        button:hover {
-            background-color: #c82333;
-        }
+        button:hover { background-color: #5a6268; }
     </style>
 </head>
 <body>
     <div id="controls">
-        <h3 style="margin-top: 0;">Outbreak Tracker</h3>
-        <p style="font-size: 14px; color: #555;">Click anywhere on the map to log a new simulated case.</p>
-        <p style="font-size: 14px; color: #555;">Drag existing pins to update coordinates.</p>
+        <h3 style="margin-top: 0; text-align: center;">Outbreak Tracker</h3>
+        <p style="font-size: 12px; color: #555;">Click map to log a case. Drag pins to update.</p>
+        
+        <div class="stat-box">
+            <div style="font-size: 12px; color: #666;">Active Cases</div>
+            <div id="caseCount" class="stat-value" style="color: #333;">0</div>
+        </div>
+        
+        <div class="stat-box">
+            <div style="font-size: 12px; color: #666;">Threat Level</div>
+            <div id="threatLevel" class="stat-value">None</div>
+        </div>
+
         <button id="clearBtn">Clear All Cases</button>
     </div>
     
@@ -48,66 +68,73 @@
     
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // 1. Initialize the map
         var map = L.map('map').setView([22.314, 87.310], 15);
 
-        // 2. Add the free OpenStreetMap tiles
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // 3. PERSISTENCE: Check browser storage, or use default cases
         var defaultCases = [
-            [22.3149, 87.3105], 
-            [22.3155, 87.3151], 
-            [22.3121, 87.3120], 
-            [22.3160, 87.3110],
-            [22.3135, 87.3135]
+            [22.3149, 87.3105], [22.3155, 87.3151], [22.3121, 87.3120], 
+            [22.3160, 87.3110], [22.3135, 87.3135]
         ];
 
-        // Load from memory if it exists, otherwise use defaults
         var savedData = localStorage.getItem('outbreakTrackerData');
         var activeCases = savedData ? JSON.parse(savedData) : defaultCases;
-
         var markers = [];
         var outbreakZone = null;
 
-        // 4. JavaScript Convex Hull Algorithm (Monotone Chain)
         function getConvexHull(points) {
             let sorted = points.slice().sort((a, b) => a[1] === b[1] ? a[0] - b[0] : a[1] - b[1]);
             if (sorted.length <= 1) return sorted;
-
-            const cross = (o, a, b) => {
-                return (a[1] - o[1]) * (b[0] - o[0]) - (a[0] - o[0]) * (b[1] - o[1]);
-            };
-
+            const cross = (o, a, b) => (a[1] - o[1]) * (b[0] - o[0]) - (a[0] - o[0]) * (b[1] - o[1]);
             let lower = [];
             for (let p of sorted) {
                 while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], p) <= 0) lower.pop();
                 lower.push(p);
             }
-
             let upper = [];
             for (let i = sorted.length - 1; i >= 0; i--) {
                 let p = sorted[i];
                 while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], p) <= 0) upper.pop();
                 upper.push(p);
             }
-
-            lower.pop();
-            upper.pop();
+            lower.pop(); upper.pop();
             return lower.concat(upper);
         }
 
-        // 5. Function to dynamically draw/redraw and SAVE the footprint
         function updateSpatialFootprint() {
-            var currentPoints = markers.map(function(m) {
-                return [m.getLatLng().lat, m.getLatLng().lng];
-            });
-
-            // Save the current state to the browser's local storage
+            var currentPoints = markers.map(m => [m.getLatLng().lat, m.getLatLng().lng]);
             localStorage.setItem('outbreakTrackerData', JSON.stringify(currentPoints));
+
+            let caseCount = currentPoints.length;
+            document.getElementById('caseCount').innerText = caseCount;
+
+            // DYNAMIC SEVERITY LOGIC
+            let polyColor = '#28a745'; // Green default
+            let threatText = "Monitoring";
+            let threatColor = '#28a745';
+
+            if (caseCount >= 10) {
+                polyColor = '#dc3545'; // Red
+                threatText = "Critical";
+                threatColor = '#dc3545';
+            } else if (caseCount >= 5) {
+                polyColor = '#fd7e14'; // Orange
+                threatText = "Escalated";
+                threatColor = '#fd7e14';
+            } else if (caseCount >= 3) {
+                polyColor = '#ffc107'; // Yellow
+                threatText = "Warning";
+                threatColor = '#ffc107';
+            } else {
+                threatText = "Insufficient Data";
+                threatColor = '#6c757d';
+            }
+
+            document.getElementById('threatLevel').innerText = threatText;
+            document.getElementById('threatLevel').style.color = threatColor;
 
             if (outbreakZone) {
                 map.removeLayer(outbreakZone);
@@ -118,53 +145,38 @@
 
             if (hullCoordinates.length >= 3) {
                 outbreakZone = L.polygon(hullCoordinates, {
-                    color: '#ff0000',
+                    color: polyColor,
                     weight: 2,
-                    fillColor: '#ff0000',
-                    fillOpacity: 0.2
+                    fillColor: polyColor,
+                    fillOpacity: 0.25
                 }).addTo(map);
             }
         }
 
-        // 6. Initialize markers from memory and make them draggable
-        activeCases.forEach(function(coord) {
+        function createMarker(coord) {
             var marker = L.marker(coord, { draggable: true }).addTo(map);
-            
-            marker.on('drag', function() {
-                updateSpatialFootprint();
-            });
-
+            marker.on('drag', updateSpatialFootprint);
             markers.push(marker);
-        });
+        }
 
-        // 7. Click to add new cases dynamically
+        activeCases.forEach(createMarker);
+
         map.on('click', function(e) {
-            var newCoord = [e.latlng.lat, e.latlng.lng];
-            var marker = L.marker(newCoord, { draggable: true }).addTo(map);
-            
-            marker.on('drag', function() {
-                updateSpatialFootprint();
-            });
-            
-            markers.push(marker);
+            createMarker([e.latlng.lat, e.latlng.lng]);
             updateSpatialFootprint();
         });
 
-        // 8. Clear all cases and wipe memory
         document.getElementById('clearBtn').addEventListener('click', function() {
-            markers.forEach(function(m) { map.removeLayer(m); });
+            markers.forEach(m => map.removeLayer(m));
             markers = [];
-            
             if (outbreakZone) {
                 map.removeLayer(outbreakZone);
                 outbreakZone = null;
             }
-            
-            // Wipe the saved data so it doesn't reload on refresh
             localStorage.removeItem('outbreakTrackerData');
+            updateSpatialFootprint();
         });
 
-        // Initial draw and zoom
         updateSpatialFootprint();
         if (outbreakZone) {
             map.fitBounds(outbreakZone.getBounds(), { padding: [50, 50] });

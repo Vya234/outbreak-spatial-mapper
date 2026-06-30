@@ -25,3 +25,9 @@
   * Evaluated Google Maps JS API for frontend rendering, but encountered hard billing constraints for API activation.
   * Pivoted to an open-source architecture; successfully created an `index.html` prototype using Leaflet.js and OpenStreetMap tiles to render the base geographical environment locally.
 * **Next Actions:** Translate the Python hull logic into JavaScript and dynamically render the outbreak polygon as a vector overlay on the Leaflet map.
+
+## June 18, 2026
+* **Objective:** Improve visual data communication for epidemiological assessment.
+* **Actions Taken:** * Developed a dynamic severity indicator logic block within the JavaScript rendering loop.
+  * Mapped the Leaflet polygon's color hex codes and opacity to the total node count (e.g., < 5 Warning, > 5 Escalated, > 10 Critical).
+  * Built an overlay UI panel to continuously output the active case count and real-time Threat Level to the researcher.
