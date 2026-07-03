@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
     <style>
         html, body { height: 100%; margin: 0; padding: 0; font-family: sans-serif; }
         #map { height: 100%; }
@@ -18,7 +19,7 @@
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 15px rgba(0,0,0,0.2);
-            width: 250px;
+            width: 260px;
         }
         .stat-box {
             background: #f8f9fa;
@@ -29,45 +30,51 @@
             text-align: center;
         }
         .stat-value {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
+            color: #dc3545;
         }
         button {
             width: 100%;
             padding: 8px;
             margin-top: 10px;
-            background-color: #6c757d;
-            color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
         }
-        button:hover { background-color: #5a6268; }
+        .btn-clear { background-color: #6c757d; color: white; }
+        .btn-clear:hover { background-color: #5a6268; }
+        .btn-export { background-color: #28a745; color: white; }
+        .btn-export:hover { background-color: #218838; }
     </style>
 </head>
 <body>
     <div id="controls">
         <h3 style="margin-top: 0; text-align: center;">Outbreak Tracker</h3>
-        <p style="font-size: 12px; color: #555;">Click map to log a case. Drag pins to update.</p>
+        <p style="font-size: 12px; color: #555;">Click the map to log a case. Drag pins to update.</p>
         
         <div class="stat-box">
             <div style="font-size: 12px; color: #666;">Active Cases</div>
-            <div id="caseCount" class="stat-value" style="color: #333;">0</div>
+            <div id="caseCount" class="stat-value">0</div>
         </div>
         
         <div class="stat-box">
-            <div style="font-size: 12px; color: #666;">Threat Level</div>
-            <div id="threatLevel" class="stat-value">None</div>
+            <div style="font-size: 12px; color: #666;">Outbreak Area</div>
+            <div id="areaDisplay" class="stat-value">0.00 km²</div>
         </div>
 
-        <button id="clearBtn">Clear All Cases</button>
+        <button id="exportBtn" class="btn-export">Export Coordinates (CSV)</button>
+        <button id="clearBtn" class="btn-clear">Clear All Cases</button>
     </div>
     
     <div id="map"></div>
     
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    
     <script>
+        // 1. Initialize the map
         var map = L.map('map').setView([22.314, 87.310], 15);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -75,66 +82,49 @@
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
+        // 2. Persistence Initialization
         var defaultCases = [
-            [22.3149, 87.3105], [22.3155, 87.3151], [22.3121, 87.3120], 
-            [22.3160, 87.3110], [22.3135, 87.3135]
+            [22.3149, 87.3105], [22.3155, 87.3151], 
+            [22.3121, 87.3120], [22.3160, 87.3110], [22.3135, 87.3135]
         ];
-
         var savedData = localStorage.getItem('outbreakTrackerData');
         var activeCases = savedData ? JSON.parse(savedData) : defaultCases;
+
         var markers = [];
         var outbreakZone = null;
 
+        // 3. Monotone Chain Convex Hull Algorithm
         function getConvexHull(points) {
             let sorted = points.slice().sort((a, b) => a[1] === b[1] ? a[0] - b[0] : a[1] - b[1]);
             if (sorted.length <= 1) return sorted;
+
             const cross = (o, a, b) => (a[1] - o[1]) * (b[0] - o[0]) - (a[0] - o[0]) * (b[1] - o[1]);
+
             let lower = [];
             for (let p of sorted) {
                 while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], p) <= 0) lower.pop();
                 lower.push(p);
             }
+
             let upper = [];
             for (let i = sorted.length - 1; i >= 0; i--) {
                 let p = sorted[i];
                 while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], p) <= 0) upper.pop();
                 upper.push(p);
             }
-            lower.pop(); upper.pop();
+
+            lower.pop();
+            upper.pop();
             return lower.concat(upper);
         }
 
+        // 4. Update Footprint and Calculate Area
         function updateSpatialFootprint() {
             var currentPoints = markers.map(m => [m.getLatLng().lat, m.getLatLng().lng]);
             localStorage.setItem('outbreakTrackerData', JSON.stringify(currentPoints));
 
-            let caseCount = currentPoints.length;
-            document.getElementById('caseCount').innerText = caseCount;
-
-            // DYNAMIC SEVERITY LOGIC
-            let polyColor = '#28a745'; // Green default
-            let threatText = "Monitoring";
-            let threatColor = '#28a745';
-
-            if (caseCount >= 10) {
-                polyColor = '#dc3545'; // Red
-                threatText = "Critical";
-                threatColor = '#dc3545';
-            } else if (caseCount >= 5) {
-                polyColor = '#fd7e14'; // Orange
-                threatText = "Escalated";
-                threatColor = '#fd7e14';
-            } else if (caseCount >= 3) {
-                polyColor = '#ffc107'; // Yellow
-                threatText = "Warning";
-                threatColor = '#ffc107';
-            } else {
-                threatText = "Insufficient Data";
-                threatColor = '#6c757d';
-            }
-
-            document.getElementById('threatLevel').innerText = threatText;
-            document.getElementById('threatLevel').style.color = threatColor;
+            // Update UI Case Count
+            document.getElementById('caseCount').innerText = currentPoints.length;
 
             if (outbreakZone) {
                 map.removeLayer(outbreakZone);
@@ -145,14 +135,27 @@
 
             if (hullCoordinates.length >= 3) {
                 outbreakZone = L.polygon(hullCoordinates, {
-                    color: polyColor,
-                    weight: 2,
-                    fillColor: polyColor,
-                    fillOpacity: 0.25
+                    color: '#ff0000', weight: 2, fillColor: '#ff0000', fillOpacity: 0.2
                 }).addTo(map);
+
+                // TURF.JS AREA CALCULATION
+                let turfPoints = hullCoordinates.map(coord => [coord[1], coord[0]]);
+                turfPoints.push(turfPoints[0]); 
+                
+                try {
+                    let polygon = turf.polygon([turfPoints]);
+                    let areaSqMeters = turf.area(polygon);
+                    let areaSqKm = (areaSqMeters / 1000000).toFixed(2);
+                    document.getElementById('areaDisplay').innerText = areaSqKm + " km²";
+                } catch (e) {
+                    console.error("Area calculation error: ", e);
+                }
+            } else {
+                document.getElementById('areaDisplay').innerText = "0.00 km²";
             }
         }
 
+        // 5. Initialize Map Events
         function createMarker(coord) {
             var marker = L.marker(coord, { draggable: true }).addTo(map);
             marker.on('drag', updateSpatialFootprint);
@@ -166,6 +169,7 @@
             updateSpatialFootprint();
         });
 
+        // 6. Clear Data
         document.getElementById('clearBtn').addEventListener('click', function() {
             markers.forEach(m => map.removeLayer(m));
             markers = [];
@@ -177,6 +181,27 @@
             updateSpatialFootprint();
         });
 
+        // 7. Export CSV Feature
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            if (markers.length === 0) {
+                alert("No active cases to export.");
+                return;
+            }
+            
+            let csvContent = "Point_ID,Latitude,Longitude\n";
+            markers.forEach((m, index) => {
+                csvContent += `${index + 1},${m.getLatLng().lat.toFixed(6)},${m.getLatLng().lng.toFixed(6)}\n`;
+            });
+
+            let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            let link = document.createElement("a");
+            let url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", "outbreak_cluster_data.csv");
+            link.click();
+        });
+
+        // Initial draw and zoom
         updateSpatialFootprint();
         if (outbreakZone) {
             map.fitBounds(outbreakZone.getBounds(), { padding: [50, 50] });
