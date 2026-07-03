@@ -1,5 +1,7 @@
 # Spatial Analytics Engine for Disease Outbreaks
 
+**Live Demo:** [https://outbreak-spatial-mapper.vercel.app/](https://outbreak-spatial-mapper.vercel.app/)
+
 ## Project Overview
 This repository contains a GIS-based web application designed to model and analyze disease outbreaks. It dynamically generates the minimum bounding area (spatial footprint) of an infection cluster using geographic coordinate points and provides real-time geospatial metrics.
 
