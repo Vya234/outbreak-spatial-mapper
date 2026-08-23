@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Outbreak Spatial Footprint</title>
+    <link rel="icon" href="data:,">
+    <title>Spatio-Temporal Outbreak Mapper</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
     <style>
@@ -19,29 +21,22 @@
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 15px rgba(0,0,0,0.2);
-            width: 260px;
+            width: 280px;
         }
         .stat-box {
             background: #f8f9fa;
             border: 1px solid #dee2e6;
             padding: 10px;
-            margin: 10px 0;
+            margin: 8px 0;
             border-radius: 4px;
             text-align: center;
         }
-        .stat-value {
-            font-size: 20px;
-            font-weight: bold;
-            color: #dc3545;
-        }
+        .stat-value { font-size: 18px; font-weight: bold; color: #dc3545; }
+        .slider-container { margin: 15px 0; text-align: center; }
+        input[type=range] { width: 100%; cursor: pointer; }
         button {
-            width: 100%;
-            padding: 8px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
+            width: 100%; padding: 8px; margin-top: 5px; border: none;
+            border-radius: 4px; cursor: pointer; font-weight: bold;
         }
         .btn-clear { background-color: #6c757d; color: white; }
         .btn-clear:hover { background-color: #5a6268; }
@@ -52,160 +47,175 @@
 <body>
     <div id="controls">
         <h3 style="margin-top: 0; text-align: center;">Outbreak Tracker</h3>
-        <p style="font-size: 12px; color: #555;">Click the map to log a case. Drag pins to update.</p>
+        <p style="font-size: 12px; color: #555;">Click the map to log a case at the current timeline date.</p>
         
-        <div class="stat-box">
-            <div style="font-size: 12px; color: #666;">Active Cases</div>
-            <div id="caseCount" class="stat-value">0</div>
+        <!-- Temporal Slider -->
+        <div class="slider-container">
+            <div style="font-size: 13px; font-weight: bold; margin-bottom: 5px;">
+                Timeline: <span id="dateDisplay" style="color: #0056b3;">Day 14</span>
+            </div>
+            <input type="range" id="timeSlider" min="1" max="14" value="14">
         </div>
         
         <div class="stat-box">
-            <div style="font-size: 12px; color: #666;">Outbreak Area</div>
-            <div id="areaDisplay" class="stat-value">0.00 km²</div>
+            <div style="font-size: 12px; color: #666;">Active Cases (Up to Date)</div>
+            <div id="caseCount" class="stat-value" style="color: #333;">0</div>
+        </div>
+        
+        <div style="display: flex; gap: 10px;">
+            <div class="stat-box" style="flex: 1;">
+                <div style="font-size: 12px; color: #666;">Area</div>
+                <div id="areaDisplay" class="stat-value" style="font-size: 15px;">0.00 km²</div>
+            </div>
+            <div class="stat-box" style="flex: 1;">
+                <div style="font-size: 12px; color: #666;">Threat</div>
+                <div id="threatLevel" class="stat-value" style="font-size: 15px;">None</div>
+            </div>
         </div>
 
-        <button id="exportBtn" class="btn-export">Export Coordinates (CSV)</button>
+        <button id="exportBtn" class="btn-export">Export Data (CSV)</button>
         <button id="clearBtn" class="btn-clear">Clear All Cases</button>
     </div>
     
     <div id="map"></div>
     
+    <!-- Libraries -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
     
     <script>
-        // 1. Initialize the map
         var map = L.map('map').setView([22.314, 87.310], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        // 2. Persistence Initialization
+        // 1. Upgraded Data Model with Synthetic Timestamps (Days 1-14)
         var defaultCases = [
-            [22.3149, 87.3105], [22.3155, 87.3151], 
-            [22.3121, 87.3120], [22.3160, 87.3110], [22.3135, 87.3135]
+            { lat: 22.3149, lng: 87.3105, day: 1 }, 
+            { lat: 22.3155, lng: 87.3151, day: 3 }, 
+            { lat: 22.3121, lng: 87.3120, day: 5 }, 
+            { lat: 22.3160, lng: 87.3110, day: 8 }, 
+            { lat: 22.3135, lng: 87.3135, day: 10 }
         ];
-        var savedData = localStorage.getItem('outbreakTrackerData');
-        var activeCases = savedData ? JSON.parse(savedData) : defaultCases;
 
-        var markers = [];
+        var savedData = localStorage.getItem('temporalOutbreakData');
+        var allCases = savedData ? JSON.parse(savedData) : defaultCases;
+        
+        var markerLayer = L.layerGroup().addTo(map);
         var outbreakZone = null;
+        var currentDayLimit = 14;
 
-        // 3. Monotone Chain Convex Hull Algorithm
+        // Monotone Chain Algorithm
         function getConvexHull(points) {
             let sorted = points.slice().sort((a, b) => a[1] === b[1] ? a[0] - b[0] : a[1] - b[1]);
             if (sorted.length <= 1) return sorted;
-
             const cross = (o, a, b) => (a[1] - o[1]) * (b[0] - o[0]) - (a[0] - o[0]) * (b[1] - o[1]);
-
             let lower = [];
             for (let p of sorted) {
                 while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], p) <= 0) lower.pop();
                 lower.push(p);
             }
-
             let upper = [];
             for (let i = sorted.length - 1; i >= 0; i--) {
                 let p = sorted[i];
                 while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], p) <= 0) upper.pop();
                 upper.push(p);
             }
-
-            lower.pop();
-            upper.pop();
+            lower.pop(); upper.pop();
             return lower.concat(upper);
         }
 
-        // 4. Update Footprint and Calculate Area
-        function updateSpatialFootprint() {
-            var currentPoints = markers.map(m => [m.getLatLng().lat, m.getLatLng().lng]);
-            localStorage.setItem('outbreakTrackerData', JSON.stringify(currentPoints));
+        // 2. The Core Spatio-Temporal Engine
+        function renderTemporalState() {
+            markerLayer.clearLayers();
+            if (outbreakZone) { map.removeLayer(outbreakZone); outbreakZone = null; }
 
-            // Update UI Case Count
+            // Filter data based on the time slider
+            let visibleCases = allCases.filter(c => c.day <= currentDayLimit);
+            
+            // Render Pins
+            let currentPoints = [];
+            visibleCases.forEach((c, index) => {
+                let marker = L.marker([c.lat, c.lng], { draggable: true });
+                marker.on('dragend', function(e) {
+                    // Update coordinate in master array and re-render
+                    let newPos = e.target.getLatLng();
+                    let targetCase = allCases.find(ac => ac.lat === c.lat && ac.lng === c.lng && ac.day === c.day);
+                    if(targetCase) { targetCase.lat = newPos.lat; targetCase.lng = newPos.lng; }
+                    saveAndRender();
+                });
+                markerLayer.addLayer(marker);
+                currentPoints.push([c.lat, c.lng]);
+            });
+
+            // UI Updates
             document.getElementById('caseCount').innerText = currentPoints.length;
 
-            if (outbreakZone) {
-                map.removeLayer(outbreakZone);
-                outbreakZone = null;
-            }
+            // Threat Logic
+            let polyColor = '#28a745'; let threatText = "Monitoring"; let threatColor = '#28a745';
+            if (currentPoints.length >= 10) { polyColor = '#dc3545'; threatText = "Critical"; threatColor = '#dc3545'; }
+            else if (currentPoints.length >= 5) { polyColor = '#fd7e14'; threatText = "Escalated"; threatColor = '#fd7e14'; }
+            else if (currentPoints.length >= 3) { polyColor = '#ffc107'; threatText = "Warning"; threatColor = '#ffc107'; }
+            else { threatText = "Insufficient"; threatColor = '#6c757d'; }
 
+            document.getElementById('threatLevel').innerText = threatText;
+            document.getElementById('threatLevel').style.color = threatColor;
+
+            // Draw Hull & Calculate Area
             var hullCoordinates = getConvexHull(currentPoints);
-
             if (hullCoordinates.length >= 3) {
                 outbreakZone = L.polygon(hullCoordinates, {
-                    color: '#ff0000', weight: 2, fillColor: '#ff0000', fillOpacity: 0.2
+                    color: polyColor, weight: 2, fillColor: polyColor, fillOpacity: 0.25
                 }).addTo(map);
 
-                // TURF.JS AREA CALCULATION
                 let turfPoints = hullCoordinates.map(coord => [coord[1], coord[0]]);
                 turfPoints.push(turfPoints[0]); 
-                
-                try {
-                    let polygon = turf.polygon([turfPoints]);
-                    let areaSqMeters = turf.area(polygon);
-                    let areaSqKm = (areaSqMeters / 1000000).toFixed(2);
-                    document.getElementById('areaDisplay').innerText = areaSqKm + " km²";
-                } catch (e) {
-                    console.error("Area calculation error: ", e);
-                }
+                let areaSqKm = (turf.area(turf.polygon([turfPoints])) / 1000000).toFixed(2);
+                document.getElementById('areaDisplay').innerText = areaSqKm + " km²";
             } else {
                 document.getElementById('areaDisplay').innerText = "0.00 km²";
             }
         }
 
-        // 5. Initialize Map Events
-        function createMarker(coord) {
-            var marker = L.marker(coord, { draggable: true }).addTo(map);
-            marker.on('drag', updateSpatialFootprint);
-            markers.push(marker);
+        function saveAndRender() {
+            localStorage.setItem('temporalOutbreakData', JSON.stringify(allCases));
+            renderTemporalState();
         }
 
-        activeCases.forEach(createMarker);
+        // 3. Slider Event Listener
+        document.getElementById('timeSlider').addEventListener('input', function(e) {
+            currentDayLimit = parseInt(e.target.value);
+            document.getElementById('dateDisplay').innerText = "Day " + currentDayLimit;
+            renderTemporalState(); // Re-draw map without changing master data
+        });
 
+        // 4. Adding new cases embeds the current timeline date
         map.on('click', function(e) {
-            createMarker([e.latlng.lat, e.latlng.lng]);
-            updateSpatialFootprint();
+            allCases.push({ lat: e.latlng.lat, lng: e.latlng.lng, day: currentDayLimit });
+            saveAndRender();
         });
 
-        // 6. Clear Data
+        // Clear Data
         document.getElementById('clearBtn').addEventListener('click', function() {
-            markers.forEach(m => map.removeLayer(m));
-            markers = [];
-            if (outbreakZone) {
-                map.removeLayer(outbreakZone);
-                outbreakZone = null;
-            }
-            localStorage.removeItem('outbreakTrackerData');
-            updateSpatialFootprint();
+            allCases = [];
+            localStorage.removeItem('temporalOutbreakData');
+            saveAndRender();
         });
 
-        // 7. Export CSV Feature
+        // 5. Updated CSV Export includes the Timestamp
         document.getElementById('exportBtn').addEventListener('click', function() {
-            if (markers.length === 0) {
-                alert("No active cases to export.");
-                return;
-            }
+            if (allCases.length === 0) return alert("No active cases to export.");
             
-            let csvContent = "Point_ID,Latitude,Longitude\n";
-            markers.forEach((m, index) => {
-                csvContent += `${index + 1},${m.getLatLng().lat.toFixed(6)},${m.getLatLng().lng.toFixed(6)}\n`;
+            let csvContent = "Point_ID,Latitude,Longitude,Timeline_Day\n";
+            allCases.forEach((c, index) => {
+                csvContent += `${index + 1},${c.lat.toFixed(6)},${c.lng.toFixed(6)},${c.day}\n`;
             });
-
             let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             let link = document.createElement("a");
-            let url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", "outbreak_cluster_data.csv");
+            link.setAttribute("href", URL.createObjectURL(blob));
+            link.setAttribute("download", "spatiotemporal_cluster_data.csv");
             link.click();
         });
 
-        // Initial draw and zoom
-        updateSpatialFootprint();
-        if (outbreakZone) {
-            map.fitBounds(outbreakZone.getBounds(), { padding: [50, 50] });
-        }
+        saveAndRender();
     </script>
 </body>
 </html>
