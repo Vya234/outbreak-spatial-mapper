@@ -42,6 +42,9 @@
         .btn-clear:hover { background-color: #5a6268; }
         .btn-export { background-color: #28a745; color: white; }
         .btn-export:hover { background-color: #218838; }
+        .btn-predict { background-color: #6f42c1; color: white; }
+        .btn-predict:hover { background-color: #5a32a3; }
+        .btn-predict:disabled { background-color: #b39ddb; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -75,6 +78,27 @@
 
         <button id="exportBtn" class="btn-export">Export Data (CSV)</button>
         <button id="clearBtn" class="btn-clear">Clear All Cases</button>
+
+        <hr style="margin: 15px 0; border: none; border-top: 1px solid #dee2e6;">
+
+        <button id="predictBtn" class="btn-predict">Predict +7 Day Expansion</button>
+        <div id="predictStatus" style="font-size: 12px; color: #666; text-align: center; margin-top: 6px;"></div>
+
+        <div id="predictResults" style="display: none;">
+            <div class="stat-box">
+                <div style="font-size: 12px; color: #666;">Predicted Cases (Day <span id="predDay"></span>)</div>
+                <div id="predCaseCount" class="stat-value" style="color: #6f42c1;">0</div>
+            </div>
+            <div class="stat-box">
+                <div style="font-size: 12px; color: #666;">Predicted Radius</div>
+                <div id="predRadius" class="stat-value" style="color: #6f42c1; font-size: 15px;">0.00 km</div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 12px; font-size: 11px; color: #555; margin-top: 10px; justify-content: center;">
+            <div><span style="display:inline-block;width:10px;height:10px;background:#dc3545;border-radius:50%;margin-right:4px;"></span>Current</div>
+            <div><span style="display:inline-block;width:10px;height:10px;background:#6f42c1;border-radius:50%;margin-right:4px;"></span>Predicted</div>
+        </div>
     </div>
     
     <div id="map"></div>
@@ -197,6 +221,9 @@
         document.getElementById('clearBtn').addEventListener('click', function() {
             allCases = [];
             localStorage.removeItem('temporalOutbreakData');
+            if (predictionLayer) { map.removeLayer(predictionLayer); predictionLayer = null; }
+            document.getElementById('predictResults').style.display = 'none';
+            document.getElementById('predictStatus').innerText = '';
             saveAndRender();
         });
 
@@ -214,6 +241,96 @@
             link.setAttribute("download", "spatiotemporal_cluster_data.csv");
             link.click();
         });
+
+        // 6. Phase 2: AI/statistical prediction of future expansion
+        // Point this at your deployed FastAPI service (see phase2_api.py).
+        // localhost only works while you're running the API locally.
+        const PREDICTION_API_URL = 'http://localhost:8000/predict';
+
+        var predictionLayer = null;
+
+        async function requestPrediction() {
+            var btn = document.getElementById('predictBtn');
+            var statusEl = document.getElementById('predictStatus');
+            var resultsEl = document.getElementById('predictResults');
+
+            var visibleCases = allCases.filter(c => c.day <= currentDayLimit);
+            if (visibleCases.length < 2) {
+                statusEl.innerText = 'Need at least 2 logged cases to predict.';
+                statusEl.style.color = '#dc3545';
+                return;
+            }
+
+            var targetDay = currentDayLimit + 7;
+            btn.disabled = true;
+            statusEl.style.color = '#666';
+            statusEl.innerText = 'Requesting forecast...';
+
+            try {
+                var response = await fetch(PREDICTION_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        cases: visibleCases.map(c => ({ lat: c.lat, lng: c.lng, day: c.day })),
+                        target_day: targetDay,
+                        population_estimate: 3000 // TODO: replace with a real catchment estimate
+                    })
+                });
+
+                if (!response.ok) {
+                    var errBody = await response.json().catch(() => ({}));
+                    throw new Error(errBody.detail || ('Request failed: ' + response.status));
+                }
+
+                var prediction = await response.json();
+                renderPrediction(prediction);
+
+                statusEl.style.color = '#28a745';
+                statusEl.innerText = 'Forecast updated.';
+            } catch (err) {
+                statusEl.style.color = '#dc3545';
+                statusEl.innerText = 'Prediction failed: ' + err.message;
+                console.error(err);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function renderPrediction(prediction) {
+            if (predictionLayer) { map.removeLayer(predictionLayer); predictionLayer = null; }
+
+            var centerLatLng = [prediction.centroid_lat, prediction.centroid_lng];
+            var radiusKm = prediction.radius_km_sir_scaled;
+
+            // turf.circle expects [lng, lat] and km units
+            var circleFeature = turf.circle(
+                [prediction.centroid_lng, prediction.centroid_lat],
+                radiusKm,
+                { steps: 48, units: 'kilometers' }
+            );
+            var latLngs = circleFeature.geometry.coordinates[0].map(coord => [coord[1], coord[0]]);
+
+            predictionLayer = L.polygon(latLngs, {
+                color: '#6f42c1',
+                weight: 2,
+                dashArray: '8, 6',
+                fillColor: '#6f42c1',
+                fillOpacity: 0.12
+            }).addTo(map);
+
+            predictionLayer.bindPopup(
+                'Predicted Day ' + prediction.target_day +
+                '<br>~' + Math.round(prediction.predicted_case_count) + ' cases' +
+                '<br>Radius: ' + radiusKm.toFixed(2) + ' km'
+            );
+
+            document.getElementById('predDay').innerText = prediction.target_day;
+            document.getElementById('predCaseCount').innerText = Math.round(prediction.predicted_case_count);
+            document.getElementById('predRadius').innerText = radiusKm.toFixed(2) + ' km';
+            document.getElementById('predictResults').style.display = 'block';
+        }
+
+        document.getElementById('predictBtn').addEventListener('click', requestPrediction);
 
         saveAndRender();
     </script>

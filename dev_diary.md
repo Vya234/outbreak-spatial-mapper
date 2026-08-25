@@ -32,8 +32,26 @@
   * Mapped the Leaflet polygon's color hex codes and opacity to the total node count (e.g., < 5 Warning, > 5 Escalated, > 10 Critical).
   * Built an overlay UI panel to continuously output the active case count and real-time Threat Level to the researcher.
 
-  ## June 30, 2026
+## June 30, 2026
 * **Objective:** Evolve the visual prototype into a robust spatial analytics tool with data export capabilities.
 * **Actions Taken:** * Integrated the Turf.js library to handle native browser-based spatial mathematics without needing a backend server.
   * Engineered dynamic area calculation logic to compute and display the exact geographic footprint (in km²) of the infection boundary in real-time.
   * Built a data export module allowing researchers to seamlessly download the active coordinate cluster as a standard `.csv` file for secondary analysis.
+
+## August 23, 2026
+* **Objective:** Introduce temporal dynamics and time-series mapping functionality.
+* **Actions Taken:** * Integrated a dynamic time-slider component into the Leaflet interface to filter and display active outbreak cases chronologically day-by-day.
+  * Upgraded the data model to include synthetic timestamps (Timeline_Day) for tracking cluster evolution across historical periods.
+
+## August 24, 2026
+* **Objective:** Architectural planning and strategy for Phase 2 predictive modeling.
+* **Actions Taken:** * Evaluated options for the predictive AI forecasting component, determining that deep learning models (such as LSTMs) are unviable due to data volume constraints on a 14-day synthetic dataset.
+  * Formulated a mathematically defensible hybrid approach combining linear polynomial trend regression for spatial drift with a Susceptible-Infected-Recovered (SIR) ordinary differential equation model for case-count growth.
+  * Designed the decoupled system architecture connecting a static Leaflet frontend to a Python backend via FastAPI.
+
+## August 25, 2026
+* **Objective:** Implementation and integration of the Phase 2 predictive forecasting backend.
+* **Actions Taken:** * Developed `data_engineering.py` to aggregate raw coordinate exports into cumulative time-series features, calculating daily centroids and great-circle spread radii via the Haversine formula.
+  * Implemented `forecasting_engine.py` to execute linear regression on spatial trajectories and fit SIR compartmental parameters via least-squares optimization (`curve_fit`).
+  * Built `api.py` (FastAPI server) to expose prediction endpoints with input validation and CORS support.
+  * Updated `index.html` with asynchronous fetch logic to request forecast outputs from the local backend and dynamically render the dashed purple prediction polygon with detailed popup metadata.
