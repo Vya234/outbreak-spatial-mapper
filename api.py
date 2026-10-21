@@ -1,32 +1,11 @@
 """
-Phase 2 - Step 3: The Prediction API
+Phase 3 - Real-World Prediction API
 ---------------------------------------
-A small FastAPI service that sits between the Leaflet frontend (on
-Vercel) and the forecasting logic from Step 1 + Step 2.
-
-Endpoint:
-    POST /predict
-        body: { "cases": [{lat, lng, day}, ...],
-                "target_day": int,
-                "population_estimate": int (optional) }
-        returns: predicted centroid, radius (trend-only and
-                 SIR-scaled), predicted case count, and the fitted
-                 SIR parameters -- everything the frontend needs to
-                 draw the "Predicted N-Day Expansion" polygon.
-
-Run locally:
-    uvicorn phase2_api:app --reload --port 8000
-
-Deployment note: Vercel's serverless functions don't run long-lived
-Python processes well, so this needs a separate host for the API
-itself (Render / Railway / Fly.io all have free tiers big enough for
-a BTP demo). The frontend stays on Vercel and just fetch()es this
-service's URL -- see the CORS config below, which you'll need to
-update with your actual Vercel domain before deploying.
+A FastAPI service that bridges the Leaflet frontend with the updated
+gradient-based SIR optimization and real-world dataset ingestion.
 """
 
 from typing import List, Optional
-
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI, HTTPException
@@ -34,13 +13,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from data_engineering import compute_daily_features
-from forecasting_engine import forecast_outbreak
+from forecasting_engine import optimize_sir_parameters, sir_model_ode
+from dataset_loader import OutbreakDatasetLoader
+from epiclim_adapter import EpiClimAdapter
+from scipy.integrate import odeint
 
-app = FastAPI(title="Outbreak Prediction API", version="0.1.0")
+app = FastAPI(title="Outbreak Prediction API", version="3.0.0")
 
 # --- CORS ---------------------------------------------------------------
-# Update allow_origins with your real Vercel deployment URL before
-# shipping. "*" is fine for local dev only.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -64,7 +44,7 @@ class CaseIn(BaseModel):
 class PredictRequest(BaseModel):
     cases: List[CaseIn]
     target_day: int = Field(..., ge=1)
-    population_estimate: int = Field(3000, ge=1, description="SIR total population assumption")
+    population_estimate: int = Field(50000, ge=1, description="Initial population assumption for gradient optimization")
 
 
 class PredictResponse(BaseModel):
@@ -80,11 +60,37 @@ class PredictResponse(BaseModel):
     sir_population_assumed: int
 
 
+# --- Startup Event (Ensures real dataset is prepped on host boot) ---------
+
+@app.on_event("startup")
+def startup_event():
+    import os
+    os.makedirs("data", exist_ok=True)
+    processed_path = "data/processed_dengue_mh.csv"
+    if not os.path.exists(processed_path) and os.path.exists("data/Final_data.csv"):
+        adapter = EpiClimAdapter(filepath="data/Final_data.csv")
+        adapter.export_to_pipeline_format(state="Maharashtra", disease="Dengue", output_filename="processed_dengue_mh.csv")
+
+
 # --- Routes ---------------------------------------------------------------
 
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    return {"status": "ok", "system": "OutbreakIQ Phase 3 Active"}
+
+
+@app.get("/api/real-outbreaks")
+def get_real_outbreaks():
+    """
+    Optional endpoint to serve the preprocessed EpiClim dataset directly to the frontend map.
+    """
+    loader = OutbreakDatasetLoader(data_dir="data")
+    try:
+        df = loader.load_dataset("processed_dengue_mh.csv")
+        # Return a sample or full dataset records
+        return df.head(500).to_dict(orient="records")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/predict", response_model=PredictResponse)
@@ -106,8 +112,6 @@ def predict(req: PredictRequest):
 
     daily = compute_daily_features(df, cumulative=True)
 
-    # Need at least a couple of distinct days with growth for the SIR
-    # fit to be meaningful, not just numerically defined.
     if daily["day"].nunique() < 3:
         raise HTTPException(
             status_code=400,
@@ -115,13 +119,52 @@ def predict(req: PredictRequest):
         )
 
     try:
-        result = forecast_outbreak(
-            daily_features=daily,
-            target_day=req.target_day,
-            population_estimate=req.population_estimate,
-        )
-    except RuntimeError as e:
-        # curve_fit raises RuntimeError if it can't converge
-        raise HTTPException(status_code=422, detail=f"Forecast model failed to fit: {e}")
+        # Extract daily case counts for gradient optimization
+        daily_counts = daily["new_cases"].values if "new_cases" in daily.columns else daily.iloc[:, 1].diff().fillna(1).values
+        
+        # Run the new gradient-based optimization engine
+        opt_res = optimize_sir_parameters(daily_counts, initial_population=req.population_estimate)
+        
+        if not opt_res["success"]:
+            raise RuntimeError("Gradient optimizer failed to converge.")
 
-    return PredictResponse(**result)
+        opt_N = opt_res["optimized_N"]
+        opt_beta = opt_res["optimized_beta"]
+        opt_gamma = opt_res["optimized_gamma"]
+
+        # Compute spatial centroid and spread radius
+        centroid_lat = float(df["Latitude"].mean())
+        centroid_lng = float(df["Longitude"].mean())
+        
+        # Trend-only & SIR-scaled spatial radius estimation
+        max_dist_deg = np.max(np.sqrt((df["Latitude"] - centroid_lat)**2 + (df["Longitude"] - centroid_lng)**2))
+        base_radius_km = max_dist_deg * 111.0 # rough lat/lng to km conversion
+        day_delta = req.target_day - max_observed_day
+        
+        radius_trend = max(1.0, base_radius_km * (1.0 + 0.05 * day_delta))
+        sir_multiplier = opt_beta / max(0.001, opt_gamma)
+        radius_sir = radius_trend * min(3.0, max(0.5, sir_multiplier * 0.5))
+
+        # Predict future cumulative cases using optimized ODE parameters
+        t_forecast = np.arange(0, req.target_day + 1)
+        cumulative_actual = np.cumsum(daily_counts)
+        I0 = max(1.0, cumulative_actual[0])
+        S0 = opt_N - I0
+        solution = odeint(sir_model_ode, [S0, I0, 0.0], t_forecast, args=(opt_N, opt_beta, opt_gamma))
+        predicted_total_cases = float(solution[-1, 1] + solution[-1, 2])
+
+    except Exception as e:
+        raise HTTPException(status_code=422, detail=f"Forecast model optimization failed: {e}")
+
+    return PredictResponse(
+        target_day=req.target_day,
+        centroid_lat=round(centroid_lat, 5),
+        centroid_lng=round(centroid_lng, 5),
+        radius_km_trend_only=round(radius_trend, 2),
+        radius_km_sir_scaled=round(radius_sir, 2),
+        radius_uncertainty_km=round(radius_sir * 0.15, 2),
+        predicted_case_count=round(predicted_total_cases, 1),
+        sir_beta=opt_beta,
+        sir_gamma=opt_gamma,
+        sir_population_assumed=int(opt_N)
+    )
