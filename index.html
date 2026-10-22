@@ -58,6 +58,7 @@
                 Timeline: <span id="dateDisplay" style="color: #0056b3;">Day 14</span>
             </div>
             <input type="range" id="timeSlider" min="1" max="14" value="14">
+            <button id="extendTimelineBtn" type="button">+ Add Next Day</button>
         </div>
         
         <div class="stat-box">
@@ -156,6 +157,21 @@
         var markerLayer = L.layerGroup().addTo(map);
         var outbreakZone = null;
         var currentDayLimit = 14;
+        var maxTimelineDay = 14;
+
+        document.getElementById('extendTimelineBtn').addEventListener('click', function() {
+            maxTimelineDay += 1;
+
+            var slider = document.getElementById('timeSlider');
+            slider.max = maxTimelineDay;
+            slider.value = maxTimelineDay;
+
+            currentDayLimit = maxTimelineDay;
+            document.getElementById('dateDisplay').innerText =
+                'Day ' + currentDayLimit;
+
+        renderTemporalState();
+    });
 
         // Monotone Chain Algorithm
         function getConvexHull(points) {
