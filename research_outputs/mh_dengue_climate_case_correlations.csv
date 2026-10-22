@@ -1,0 +1,4 @@
+climate_variable,n_observations,spearman_rho
+Temp,333,-0.005221579055629273
+preci,362,0.02057592346449628
+LAI,274,0.0688267658469496

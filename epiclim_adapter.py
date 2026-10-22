@@ -1,80 +1,190 @@
+
+from pathlib import Path
+
 import pandas as pd
-import numpy as np
-import os
+
+REQUIRED_COLUMNS = {
+    "state_ut", "district", "Disease", "Cases", "Deaths",
+    "day", "mon", "year", "Latitude", "Longitude"
+}
+
+ENVIRONMENT_COLUMNS = ["preci", "LAI", "Temp"]
+
 
 class EpiClimAdapter:
-    """
-    Adapts the EpiClim Final_data.csv dataset into the schema required by 
-    the OutbreakIQ spatial-temporal pipeline (Point_ID, Latitude, Longitude, Timeline_Day).
-    """
-    def __init__(self, filepath: str = "data/Final_data.csv"):
-        if not os.path.exists(filepath) and os.path.exists("Final_data.csv"):
-            filepath = "Final_data.csv"
-        self.filepath = filepath
-        if os.path.exists(filepath):
-            self.df = pd.read_csv(filepath)
+    def __init__(self, filepath="Final_data.csv"):
+        self.filepath = Path(filepath)
+
+        if not self.filepath.exists():
+            raise FileNotFoundError(
+                f"Source CSV not found: {self.filepath}"
+            )
+
+        self.df = pd.read_csv(self.filepath)
+
+        missing = REQUIRED_COLUMNS - set(self.df.columns)
+        if missing:
+            raise ValueError(
+                f"Missing required columns: {sorted(missing)}"
+            )
+
+    def filter_observations(
+        self,
+        state="Maharashtra",
+        disease="Dengue",
+        include_mixed_labels=False
+    ):
+        df = self.df.copy()
+
+        # Normalize text without changing the source CSV.
+        for col in ["state_ut", "district", "Disease"]:
+            df[col] = df[col].astype("string").str.strip()
+
+        df = df[
+            df["state_ut"].str.casefold()
+            == state.strip().casefold()
+        ]
+
+        if include_mixed_labels:
+            df = df[
+                df["Disease"].str.contains(
+                    disease, case=False, na=False
+                )
+            ]
         else:
-            self.df = None
+            df = df[
+                df["Disease"].str.casefold()
+                == disease.strip().casefold()
+            ]
 
-    def filter_outbreak(self, state: str = None, district: str = None, disease: str = None) -> pd.DataFrame:
-        if self.df is None:
-            raise FileNotFoundError("Final_data.csv dataset not found in data/ directory.")
-            
-        filtered = self.df.copy()
-        if state:
-            filtered = filtered[filtered['state_ut'].str.contains(state, case=False, na=False)]
-        if district:
-            filtered = filtered[filtered['district'].str.contains(district, case=False, na=False)]
-        if disease:
-            filtered = filtered[filtered['Disease'].str.contains(disease, case=False, na=False)]
-            
-        return filtered
+        if df.empty:
+            raise ValueError(
+                f"No records found for {state} / {disease}"
+            )
 
-    def export_to_pipeline_format(self, state: str = "Maharashtra", disease: str = "Dengue", output_filename: str = "processed_dengue_mh.csv") -> str:
-        """
-        Extracts multi-week records for a specific region/disease and expands them 
-        into case-point coordinates across a chronological Timeline_Day sequence.
-        """
-        subset = self.filter_outbreak(state=state, disease=disease)
-        if subset.empty:
-            print(f"No records found for {disease} in {state}. Returning default sample sequence.")
-            subset = self.df.head(20)
-            
-        subset = subset.sort_values(by=['year', 'mon', 'day']).reset_index(drop=True)
-        
-        records = []
-        point_id = 1
-        
-        for idx, row in subset.iterrows():
-            timeline_day = idx + 1
-            
-            try:
-                val = row['Cases']
-                cases = int(val) if pd.notnull(val) and str(val).isdigit() else 1
-            except Exception:
-                cases = 1
-                
-            base_lat = float(row['Latitude']) if pd.notnull(row['Latitude']) else 19.0760
-            base_lon = float(row['Longitude']) if pd.notnull(row['Longitude']) else 72.8777
-            
-            for i in range(min(cases, 50)): # Cap cluster expansion per record for performance
-                lat = base_lat + np.random.normal(0, 0.02)
-                lon = base_lon + np.random.normal(0, 0.02)
-                records.append({
-                    "Point_ID": point_id,
-                    "Latitude": round(lat, 5),
-                    "Longitude": round(lon, 5),
-                    "Timeline_Day": timeline_day
-                })
-                point_id += 1
-                
-        out_df = pd.DataFrame(records)
-        output_path = os.path.join("data", output_filename) if os.path.exists("data") else output_filename
-        out_df.to_csv(output_path, index=False)
-        print(f"Successfully exported {len(out_df)} coordinate points to {output_path}")
-        return output_path
+        # Construct actual calendar dates.
+        df["Date"] = pd.to_datetime(
+            {
+                "year": df["year"],
+                "month": df["mon"],
+                "day": df["day"]
+            },
+            errors="coerce"
+        )
+
+        # Convert numeric fields robustly.
+        for col in [
+            "Cases", "Deaths", "Latitude", "Longitude",
+            *ENVIRONMENT_COLUMNS
+        ]:
+            if col in df.columns:
+                cleaned = (
+                    df[col]
+                    .astype("string")
+                    .str.replace(",", "", regex=False)
+                    .str.strip()
+                )
+                df[col] = pd.to_numeric(
+                    cleaned, errors="coerce"
+                )
+
+        # Invalid dates, coordinates and case counts are excluded.
+        df = df.dropna(
+            subset=["Date", "Latitude", "Longitude", "Cases"]
+        ).copy()
+
+        df = df[
+            df["Cases"].ge(0)
+            & df["Latitude"].between(-90, 90)
+            & df["Longitude"].between(-180, 180)
+        ].copy()
+
+        # Preserve the original observations; do not create
+        # artificial case points or artificial daily timestamps.
+        columns = [
+            "Date", "state_ut", "district", "Disease",
+            "Cases", "Deaths", "Latitude", "Longitude"
+        ]
+        columns += [
+            c for c in ENVIRONMENT_COLUMNS if c in df.columns
+        ]
+
+        return (
+            df[columns]
+            .sort_values(["Date", "district"])
+            .reset_index(drop=True)
+        )
+
+    @staticmethod
+    def aggregate_observed_dates(observations):
+        """Summarize records on dates present in the source."""
+        aggregations = {
+            "Cases": ("Cases", "sum"),
+            "district_count": ("district", "nunique"),
+            "record_count": ("district", "size"),
+            "centroid_lat": ("Latitude", "mean"),
+            "centroid_lon": ("Longitude", "mean")
+        }
+
+        if "Deaths" in observations.columns:
+            aggregations["Deaths"] = ("Deaths", "sum")
+
+        for col in ENVIRONMENT_COLUMNS:
+            if col in observations.columns:
+                aggregations[f"mean_{col}"] = (col, "mean")
+
+        daily = (
+            observations.groupby("Date", as_index=False)
+            .agg(**aggregations)
+            .sort_values("Date")
+            .reset_index(drop=True)
+        )
+
+        daily["elapsed_days_from_start"] = (
+            daily["Date"] - daily["Date"].min()
+        ).dt.days
+
+        # Missing dates remain missing. They are not assumed to
+        # represent zero reported cases.
+        return daily
+
+    def export(self, output_dir="data_corrected"):
+        output_dir = Path(output_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        observations = self.filter_observations()
+        daily = self.aggregate_observed_dates(observations)
+
+        observations_path = (
+            output_dir / "epiclim_mh_dengue_observations.csv"
+        )
+        daily_path = (
+            output_dir / "epiclim_mh_dengue_by_observed_date.csv"
+        )
+
+        observations.to_csv(
+            observations_path, index=False, date_format="%Y-%m-%d"
+        )
+        daily.to_csv(
+            daily_path, index=False, date_format="%Y-%m-%d"
+        )
+
+        print("Source:", self.filepath)
+        print("Observation records:", len(observations))
+        print("Distinct dates:", observations["Date"].nunique())
+        print("Districts:", observations["district"].nunique())
+        print(
+            "Date range:",
+            observations["Date"].min().date(),
+            "to",
+            observations["Date"].max().date()
+        )
+        print("Observation CSV:", observations_path)
+        print("Date summary CSV:", daily_path)
+
+        return observations, daily
+
 
 if __name__ == "__main__":
-    adapter = EpiClimAdapter()
-    if adapter.df is not None:
-        adapter.export_to_pipeline_format(state="Maharashtra", disease="Dengue", output_filename="processed_dengue_mh.csv")
+    adapter = EpiClimAdapter("data/Final_data.csv")
+    observations, daily = adapter.export()

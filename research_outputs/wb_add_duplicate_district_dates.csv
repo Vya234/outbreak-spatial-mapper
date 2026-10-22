@@ -1,0 +1,69 @@
+district,date,rows,distinct_case_values
+Bankura,2009-09-29,2,2
+Bankura,2010-11-22,2,2
+Bankura,2011-02-16,2,1
+Bankura,2011-03-29,2,2
+Bankura,2011-06-21,2,1
+Bankura,2011-06-25,2,1
+Bankura,2011-08-16,2,2
+Bankura,2011-08-28,3,2
+Bankura,2011-09-15,2,2
+Bankura,2011-10-16,2,2
+Bankura,2013-07-11,2,2
+Bankura,2013-08-30,2,2
+Bankura,2013-09-25,2,2
+Bankura,2013-10-07,2,2
+Bankura,2013-11-10,2,2
+Bankura,2014-07-03,2,1
+Bankura,2015-09-20,2,2
+Bankura,2016-06-06,2,2
+Birbhum,2010-07-04,2,2
+Birbhum,2010-11-17,2,1
+Burdwan,2011-06-17,3,2
+Burdwan,2011-06-22,2,1
+Burdwan,2014-08-13,2,2
+Burdwan,2015-04-08,2,2
+Burdwan,2015-05-05,2,1
+Burdwan,2015-05-18,2,1
+Burdwan,2015-08-29,2,1
+Darjeeling,2011-06-02,2,1
+Hooghly,2010-09-24,2,2
+Hooghly,2011-03-31,2,2
+Hooghly,2011-04-06,2,2
+Hooghly,2014-09-26,2,2
+Hooghly,2021-03-06,2,1
+Howrah,2011-06-03,3,2
+Jalpaiguri,2010-04-15,3,2
+Jalpaiguri,2010-09-18,3,3
+Jalpaiguri,2011-02-03,3,3
+Jalpaiguri,2011-05-05,2,2
+Jalpaiguri,2011-05-22,2,1
+Jalpaiguri,2011-05-23,4,1
+Jalpaiguri,2011-06-12,3,1
+Jalpaiguri,2016-05-07,2,1
+Murshidabad,2010-08-19,2,2
+Murshidabad,2010-11-21,2,1
+Murshidabad,2011-07-23,2,2
+Nadia,2014-07-02,2,1
+North 24 Parganas,2010-09-17,2,2
+North 24 Parganas,2012-02-18,2,2
+North 24 Parganas,2017-03-11,2,1
+North 24 Parganas,2022-03-05,3,2
+Paschim Medinipur,2010-05-22,2,2
+Paschim Medinipur,2013-06-04,2,2
+Purba Medinipur,2010-04-03,2,1
+Purulia,2009-06-14,2,2
+Purulia,2011-08-16,2,2
+Purulia,2016-07-10,2,1
+Purulia,2016-07-15,2,1
+Purulia,2016-07-20,2,1
+Purulia,2016-08-24,2,1
+South 24 Parganas,2011-12-16,2,2
+South 24 Parganas,2014-07-22,2,2
+South 24 Parganas,2016-05-03,2,2
+South 24 Parganas,2016-05-05,4,2
+South 24 Parganas,2016-05-22,2,1
+South 24 parganas,2022-02-23,2,1
+South Parganas,2014-09-18,2,1
+West Medinipur,2013-10-14,2,2
+West Medinipur,2014-07-24,2,2

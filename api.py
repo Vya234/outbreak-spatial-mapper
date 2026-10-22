@@ -26,6 +26,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5500",
         "http://127.0.0.1:5500",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
         "https://outbreak-spatial-mapper.vercel.app",
     ],
     allow_methods=["POST", "GET"],
@@ -65,11 +67,16 @@ class PredictResponse(BaseModel):
 @app.on_event("startup")
 def startup_event():
     import os
+
     os.makedirs("data", exist_ok=True)
     processed_path = "data/processed_dengue_mh.csv"
-    if not os.path.exists(processed_path) and os.path.exists("data/Final_data.csv"):
-        adapter = EpiClimAdapter(filepath="data/Final_data.csv")
-        adapter.export_to_pipeline_format(state="Maharashtra", disease="Dengue", output_filename="processed_dengue_mh.csv")
+
+    if not os.path.exists(processed_path):
+        print(
+            "Processed dengue dataset is missing. "
+            "Skipping optional dataset preparation; "
+            "the prediction endpoint remains available."
+        )
 
 
 # --- Routes ---------------------------------------------------------------

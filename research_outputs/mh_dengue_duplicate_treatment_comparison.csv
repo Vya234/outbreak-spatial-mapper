@@ -1,0 +1,25 @@
+treatment,month,observation_count,median_cases,mean_cases
+All original rows,1,9,11.0,27.77777777777778
+All original rows,2,7,10.0,10.428571428571429
+All original rows,3,12,21.0,25.333333333333332
+All original rows,4,31,18.0,27.741935483870968
+All original rows,5,29,17.0,27.275862068965516
+All original rows,6,28,19.0,25.428571428571427
+All original rows,7,33,13.0,23.242424242424242
+All original rows,8,55,18.0,33.03636363636364
+All original rows,9,62,25.0,33.74193548387097
+All original rows,10,56,18.0,32.25
+All original rows,11,37,16.0,20.08108108108108
+All original rows,12,11,12.0,18.454545454545453
+District-date median,1,9,11.0,27.77777777777778
+District-date median,2,7,10.0,10.428571428571429
+District-date median,3,12,21.0,25.333333333333332
+District-date median,4,29,18.0,28.310344827586206
+District-date median,5,29,17.0,27.275862068965516
+District-date median,6,28,19.0,25.428571428571427
+District-date median,7,32,13.0,22.90625
+District-date median,8,54,18.0,33.44444444444444
+District-date median,9,61,25.0,34.09836065573771
+District-date median,10,54,18.0,32.601851851851855
+District-date median,11,37,16.0,20.08108108108108
+District-date median,12,10,12.0,18.6

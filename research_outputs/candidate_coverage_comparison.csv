@@ -1,0 +1,6 @@
+state,disease,raw_rows,unique_district_dates,districts,distinct_dates,first_date,last_date,duplicate_groups,rows_in_duplicate_groups,districts_with_8plus_observations,median_observations_per_district,median_of_district_median_gaps_days,temp_missing_pct_raw,preci_missing_pct_raw,lai_missing_pct_raw
+Maharashtra,Acute Diarrhoeal Disease,445,432,35,397,2009-07-23,2022-06-15,12,25,24,13.0,141.75,12.1,0.0,27.0
+Madhya Pradesh,Acute Diarrhoeal Disease,371,360,55,321,2009-06-16,2022-06-12,11,22,19,5.0,335.25,22.6,0.0,17.0
+Tamil Nadu,Dengue,220,212,47,199,2009-11-11,2022-05-20,5,13,11,3.0,292.0,4.5,10.5,20.0
+Karnataka,Dengue,188,179,39,174,2010-03-02,2022-06-08,9,18,6,3.0,144.0,9.6,0.0,25.5
+Karnataka,Chikungunya,203,196,42,185,2010-04-15,2022-06-12,7,14,4,3.0,303.5,8.9,0.0,26.1

@@ -1,0 +1,202 @@
+state_ut,Disease,rows,districts,distinct_dates,first_date,last_date,cases_missing_pct,temp_missing_pct,preci_missing_pct,lai_missing_pct
+West Bengal,Acute Diarrhoeal Disease,562,37,421,2009-06-14,2022-04-25,0.0,12.3,0.0,22.4
+Karnataka,Acute Diarrhoeal Disease,515,50,453,2009-06-09,2022-06-14,0.0,10.5,0.0,25.6
+Maharashtra,Acute Diarrhoeal Disease,445,35,397,2009-07-23,2022-06-15,0.0,12.1,0.0,27.0
+Madhya Pradesh,Acute Diarrhoeal Disease,371,55,321,2009-06-16,2022-06-12,0.0,22.6,0.0,17.0
+Maharashtra,Dengue,370,34,334,2009-08-31,2022-05-16,0.0,8.1,0.0,23.8
+Gujarat,Acute Diarrhoeal Disease,320,33,295,2009-06-16,2022-06-29,0.0,8.8,0.0,25.0
+Odisha,Acute Diarrhoeal Disease,315,35,291,2009-07-09,2022-06-10,0.0,7.3,15.6,27.0
+Bihar,Acute Diarrhoeal Disease,300,33,244,2010-06-02,2020-03-03,0.0,17.3,0.0,27.7
+Chhattisgarh,Acute Diarrhoeal Disease,300,23,258,2009-06-30,2022-06-15,0.0,27.0,0.0,22.0
+Tamil Nadu,Acute Diarrhoeal Disease,289,51,259,2009-07-03,2022-06-06,0.0,4.8,1.4,22.1
+Andhra Pradesh,Acute Diarrhoeal Disease,253,18,222,2009-06-19,2022-05-31,0.0,7.9,0.0,24.1
+Uttar Pradesh,Acute Diarrhoeal Disease,225,51,201,2009-07-27,2022-06-16,0.0,13.3,0.0,22.7
+Tamil Nadu,Dengue,220,47,199,2009-11-11,2022-05-20,0.0,4.5,10.5,20.0
+Karnataka,Chikungunya,203,42,185,2010-04-15,2022-06-12,0.0,8.9,0.0,26.1
+Karnataka,Dengue,188,39,174,2010-03-02,2022-06-08,0.0,9.6,0.0,25.5
+Assam,Acute Diarrhoeal Disease,187,34,177,2009-06-30,2022-06-10,0.0,3.7,0.0,27.8
+Tamil Nadu,Chikungunya,181,37,170,2009-06-15,2020-06-08,0.0,4.4,10.5,31.5
+Kerala,Dengue,164,17,136,2010-03-14,2022-05-17,0.0,17.1,6.1,31.7
+West Bengal,Dengue,150,18,100,2010-08-30,2022-05-08,0.0,12.7,0.0,30.7
+Rajasthan,Acute Diarrhoeal Disease,148,33,139,2009-06-19,2022-06-08,0.0,6.8,0.0,21.6
+Maharashtra,Chikungunya,147,25,138,2009-11-22,2022-06-03,0.0,4.1,0.0,27.2
+Telangana,Acute Diarrhoeal Disease,124,17,112,2009-06-15,2022-04-08,0.0,17.7,0.0,22.6
+Jharkhand,Acute Diarrhoeal Disease,122,19,118,2009-10-03,2022-06-11,0.0,17.2,0.0,20.5
+West Bengal,Cholera,118,17,99,2009-05-05,2022-04-17,0.0,8.5,0.0,26.3
+Punjab,Acute Diarrhoeal Disease,117,23,109,2009-06-21,2022-06-15,0.0,0.9,0.0,23.1
+Karnataka,Cholera,114,31,110,2009-06-11,2022-05-31,0.0,11.4,0.0,27.2
+Maharashtra,Malaria,113,19,112,2009-09-12,2022-06-13,0.0,12.4,0.0,28.3
+Jammu and Kashmir,Acute Diarrhoeal Disease,102,20,92,2010-08-22,2020-10-28,0.0,0.0,0.0,23.5
+Kerala,Acute Diarrhoeal Disease,92,16,91,2009-09-11,2022-06-07,0.0,5.4,1.1,28.3
+Madhya Pradesh,Malaria,88,32,84,2009-08-25,2019-08-22,0.0,9.1,0.0,25.0
+Haryana,Acute Diarrhoeal Disease,83,16,74,2009-07-05,2022-05-30,0.0,2.4,0.0,30.1
+Himachal Pradesh,Acute Diarrhoeal Disease,77,11,70,2009-06-18,2021-07-16,0.0,0.0,0.0,32.5
+Gujarat,Cholera,66,17,60,2010-05-12,2021-10-08,0.0,19.7,0.0,22.7
+Assam,Malaria,59,19,48,2009-06-20,2020-11-03,0.0,11.9,0.0,23.7
+Maharashtra,Cholera,58,22,56,2009-12-28,2021-11-12,0.0,12.1,0.0,36.2
+Uttar Pradesh,Dengue,57,22,47,2010-09-12,2021-11-18,0.0,0.0,0.0,17.5
+Uttarakhand,Acute Diarrhoeal Disease,55,16,51,2009-06-02,2022-05-30,0.0,0.0,0.0,30.9
+Punjab,Cholera,53,10,51,2009-06-16,2019-09-14,0.0,0.0,0.0,32.1
+Assam,Acute Encephalitis Syndrome,50,19,45,2010-05-05,2021-10-02,0.0,2.0,0.0,16.0
+Madhya Pradesh,Chikungunya,50,15,42,2010-10-28,2018-10-29,0.0,6.0,0.0,12.0
+Assam,Cholera,49,16,38,2009-06-12,2019-09-02,0.0,0.0,0.0,18.4
+Telangana,Dengue,47,13,44,2011-04-27,2022-03-11,0.0,10.6,0.0,27.7
+Jharkhand,Malaria,46,14,44,2009-07-19,2022-04-21,0.0,4.3,0.0,19.6
+Bihar,Malaria,43,8,40,2009-08-03,2020-12-06,0.0,9.3,0.0,18.6
+Arunachal Pradesh,Dengue,40,5,15,2012-09-03,2019-06-22,0.0,2.5,0.0,10.0
+Arunachal Pradesh,Acute Diarrhoeal Disease,40,15,26,2010-05-05,2022-05-27,0.0,5.0,0.0,30.0
+Madhya Pradesh,Dengue,37,18,34,2009-07-28,2021-08-12,0.0,8.1,0.0,18.9
+Assam,Dengue,37,14,28,2010-09-22,2022-06-03,0.0,8.1,0.0,32.4
+Karnataka,Malaria,35,16,34,2010-03-25,2019-09-06,0.0,11.4,0.0,14.3
+Bihar,Dengue,34,15,25,2010-09-13,2019-10-31,0.0,8.8,0.0,32.4
+Gujarat,Chikungunya,34,19,30,2010-08-06,2019-05-14,0.0,0.0,0.0,11.8
+Jharkhand,Dengue,32,10,28,2010-01-18,2021-10-05,0.0,6.2,0.0,6.2
+Madhya Pradesh,Cholera,31,14,29,2010-09-21,2018-08-25,0.0,38.7,0.0,22.6
+Telangana,Chikungunya,27,9,27,2011-01-10,2019-07-04,0.0,18.5,0.0,40.7
+Uttar Pradesh,Malaria,26,13,24,2011-08-11,2021-11-27,0.0,11.5,0.0,19.2
+Maharashtra,Acute Gastroenteritis,26,16,23,2016-03-14,2018-08-23,0.0,23.1,3.8,34.6
+Tamil Nadu,Cholera,26,18,26,2010-05-03,2022-06-06,0.0,0.0,0.0,15.4
+Rajasthan,Dengue,26,16,24,2009-10-10,2019-11-01,0.0,0.0,0.0,23.1
+Haryana,Cholera,25,8,19,2009-09-16,2021-08-03,0.0,4.0,0.0,44.0
+Chandigarh,Dengue,24,1,11,2009-10-30,2020-12-07,0.0,20.8,0.0,4.2
+Puducherry,Dengue,24,5,19,2009-10-22,2021-03-01,0.0,0.0,0.0,25.0
+West Bengal,Chikungunya,24,9,15,2009-10-21,2016-02-01,0.0,4.2,0.0,20.8
+Chhattisgarh,Dengue,23,7,19,2009-09-20,2019-12-07,0.0,21.7,0.0,21.7
+Chhattisgarh,Malaria,22,9,22,2011-07-11,2017-07-28,0.0,22.7,0.0,27.3
+Meghalaya,Acute Diarrhoeal Disease,22,10,22,2012-01-18,2022-05-12,0.0,9.1,0.0,13.6
+Bihar,Acute Encephalitis Syndrome,22,5,15,2010-11-07,2019-06-23,0.0,0.0,0.0,18.2
+Odisha,Cholera,21,11,21,2010-08-06,2022-04-21,0.0,19.0,19.0,23.8
+West Bengal,Malaria,21,4,14,2011-07-03,2017-05-23,0.0,0.0,0.0,19.0
+Karnataka,Dengue And Chikungunya,20,10,19,2014-08-20,2019-11-18,0.0,25.0,0.0,20.0
+Rajasthan,Malaria,19,12,17,2009-06-17,2016-09-20,0.0,0.0,0.0,36.8
+Rajasthan,Cholera,18,8,16,2010-07-16,2016-08-29,0.0,11.1,0.0,16.7
+Delhi,Dengue,18,3,6,2013-07-11,2019-10-21,0.0,0.0,0.0,16.7
+Kerala,Cholera,18,6,16,2011-06-20,2021-12-08,0.0,33.3,0.0,33.3
+Tripura,Acute Diarrhoeal Disease,17,9,17,2011-01-20,2019-08-25,0.0,5.9,0.0,17.6
+Andhra Pradesh,Dengue,16,8,16,2011-08-31,2019-07-01,6.2,0.0,0.0,12.5
+Kerala,Chikungunya,15,10,12,2009-06-10,2021-06-15,0.0,20.0,20.0,40.0
+Karnataka,Acute Gastroenteritis,15,11,14,2016-02-02,2017-10-27,0.0,13.3,0.0,26.7
+Uttarakhand,Dengue,14,7,12,2010-08-28,2021-10-16,0.0,0.0,0.0,64.3
+Manipur,Dengue,13,5,9,2011-10-22,2019-10-01,0.0,15.4,0.0,7.7
+Maharashtra,Acute Encephalitis Syndrome,13,7,12,2011-06-18,2019-08-16,0.0,15.4,0.0,53.8
+Chhattisgarh,Acute Gastroenteritis,13,2,13,2016-06-13,2018-06-29,0.0,53.8,0.0,38.5
+Gujarat,Dengue,13,8,13,2010-08-13,2022-04-26,0.0,7.7,0.0,38.5
+Chandigarh,Cholera,13,1,9,2011-08-01,2021-08-01,0.0,15.4,0.0,38.5
+Lakshadweep,Dengue,11,4,6,2014-03-03,2016-11-07,0.0,81.8,100.0,9.1
+Himachal Pradesh,Dengue,11,2,10,2013-10-23,2022-06-10,0.0,0.0,0.0,18.2
+Chhattisgarh,Cholera,11,6,11,2011-06-21,2017-08-16,0.0,9.1,0.0,27.3
+Jharkhand,Chikungunya,11,4,8,2011-07-15,2019-03-25,0.0,9.1,0.0,18.2
+Maharashtra,Dengue And Chikungunya,11,6,11,2013-07-14,2020-10-31,0.0,0.0,0.0,27.3
+Gujarat,Malaria,10,6,9,2009-06-16,2016-04-04,0.0,10.0,0.0,30.0
+Tamil Nadu,Dengue And Chikungunya,10,9,10,2012-10-09,2019-01-04,0.0,0.0,0.0,0.0
+Telangana,Cholera,10,3,7,2013-08-16,2016-10-04,0.0,20.0,0.0,20.0
+Kerala,Malaria,9,7,9,2010-04-06,2020-01-29,0.0,11.1,11.1,44.4
+Arunachal Pradesh,Malaria,9,5,6,2009-12-01,2022-05-12,0.0,0.0,0.0,11.1
+Jammu and Kashmir,Acute Gastroenteritis,8,7,8,2016-07-30,2017-09-11,0.0,0.0,0.0,0.0
+Rajasthan,Chikungunya,8,6,8,2010-03-28,2016-10-28,0.0,0.0,0.0,25.0
+Tripura,Malaria,8,5,5,2010-12-18,2019-06-18,0.0,0.0,0.0,75.0
+Goa,Dengue,8,2,8,2013-02-17,2019-04-10,0.0,12.5,0.0,12.5
+West Bengal,Acute Encephalitis Syndrome,8,4,3,2011-07-29,2014-06-23,0.0,0.0,0.0,0.0
+Uttar Pradesh,Acute Encephalitis Syndrome,7,7,7,2009-11-28,2022-01-24,0.0,0.0,0.0,28.6
+Odisha,Malaria,7,4,7,2009-08-31,2015-06-28,0.0,14.3,28.6,0.0
+Sikkim,Acute Diarrhoeal Disease,7,5,6,2011-06-10,2020-05-07,0.0,0.0,0.0,71.4
+Odisha,Chikungunya,7,4,6,2009-09-20,2021-01-30,0.0,0.0,42.9,28.6
+Maharashtra,Suspected Dengue,7,6,7,2016-06-22,2021-06-25,0.0,0.0,0.0,42.9
+Delhi,Acute Diarrhoeal Disease,7,5,7,2013-06-23,2016-10-17,0.0,0.0,0.0,0.0
+Rajasthan,Acute Gastroenteritis,7,3,6,2016-04-10,2016-09-25,0.0,0.0,0.0,14.3
+Haryana,Dengue,7,4,5,2010-07-19,2021-09-03,0.0,0.0,0.0,14.3
+Gujarat,Acute Gastroenteritis,7,6,7,2016-02-16,2022-03-05,0.0,0.0,0.0,28.6
+Andhra Pradesh,Chikungunya,6,4,6,2011-12-14,2017-03-18,0.0,16.7,0.0,0.0
+Delhi,Cholera,6,3,6,2013-07-10,2019-07-25,0.0,0.0,0.0,33.3
+Mizoram,Dengue,6,4,6,2016-08-30,2021-12-02,0.0,0.0,0.0,33.3
+Jammu and Kashmir,Dengue,6,3,3,2015-09-02,2019-09-03,0.0,0.0,0.0,0.0
+Tamil Nadu,Malaria,6,6,6,2009-11-05,2018-12-25,0.0,0.0,0.0,16.7
+Puducherry,Cholera,6,1,4,2010-06-22,2020-04-01,0.0,0.0,0.0,0.0
+Nagaland,Dengue,6,3,6,2015-10-14,2019-08-23,0.0,0.0,0.0,0.0
+Odisha,Acute Gastroenteritis,6,4,6,2016-07-27,2018-08-30,0.0,33.3,0.0,16.7
+Goa,Acute Diarrhoeal Disease,5,2,5,2013-05-19,2019-02-06,0.0,0.0,0.0,20.0
+Manipur,Acute Diarrhoeal Disease,5,4,5,2011-02-06,2018-04-27,0.0,0.0,0.0,0.0
+Sikkim,Dengue,5,3,4,2013-08-22,2019-09-04,0.0,0.0,0.0,0.0
+Uttar Pradesh,Cholera,5,4,5,2016-05-05,2021-10-02,0.0,20.0,0.0,0.0
+Dadra and Nagar Haveli,Cholera,5,1,5,2013-07-14,2019-01-04,0.0,40.0,0.0,20.0
+Puducherry,Acute Diarrhoeal Disease,4,2,4,2018-02-19,2022-05-26,0.0,0.0,0.0,0.0
+Mizoram,Acute Diarrhoeal Disease,4,3,4,2012-06-04,2020-12-26,0.0,0.0,0.0,25.0
+Puducherry,Chikungunya,4,2,4,2010-01-04,2019-04-01,0.0,25.0,0.0,0.0
+Nagaland,Malaria,4,3,4,2009-05-04,2020-10-28,0.0,0.0,0.0,25.0
+Andhra Pradesh,Malaria,4,4,4,2009-06-15,2017-07-10,0.0,0.0,0.0,25.0
+Haryana,Malaria,4,4,4,2010-07-31,2015-09-01,0.0,0.0,0.0,0.0
+Chandigarh,Acute Diarrhoeal Disease,4,1,4,2017-01-25,2018-06-16,0.0,0.0,0.0,50.0
+Arunachal Pradesh,Chikungunya,4,1,2,2015-08-18,2019-07-07,0.0,0.0,0.0,0.0
+Telangana,Dengue And Chikungunya,4,2,4,2012-08-23,2019-10-29,0.0,0.0,0.0,25.0
+Andaman and Nicobar Islands,Acute Diarrhoeal Disease,3,2,3,2013-12-16,2019-10-09,0.0,0.0,0.0,0.0
+Dadra and Nagar Haveli,Acute Diarrhoeal Disease,3,1,3,2016-11-30,2020-01-29,0.0,33.3,0.0,0.0
+Daman and Diu,Dengue,3,2,3,2012-10-04,2019-09-20,0.0,33.3,100.0,33.3
+Telangana,Malaria,3,2,3,2014-09-21,2016-08-26,0.0,0.0,0.0,33.3
+Kerala,Suspected Dengue,3,3,3,2016-02-12,2021-06-10,0.0,0.0,0.0,66.7
+Dadra and Nagar Haveli,Dengue,3,1,3,2010-10-13,2015-09-16,0.0,0.0,0.0,0.0
+Jammu and Kashmir,Cholera,3,3,3,2010-08-16,2019-08-26,0.0,0.0,0.0,0.0
+Himachal Pradesh,Cholera,3,1,1,2010-07-13,2010-07-13,0.0,0.0,0.0,0.0
+Uttarakhand,Acute Encephalitis Syndrome,3,3,3,2011-07-20,2021-09-14,0.0,0.0,0.0,100.0
+Telangana,Acute Gastroenteritis,3,2,3,2017-07-08,2017-07-13,0.0,33.3,0.0,0.0
+West Bengal,Dengue And Chikungunya,3,2,2,2011-09-21,2017-07-09,0.0,66.7,0.0,33.3
+Meghalaya,Malaria,3,3,2,2013-07-16,2015-11-13,0.0,0.0,0.0,0.0
+Meghalaya,Dengue,3,2,3,2016-08-11,2021-09-16,0.0,33.3,0.0,33.3
+Karnataka,Suspected Chikungunya,3,3,3,2017-06-03,2017-10-26,0.0,33.3,0.0,33.3
+Andhra Pradesh,Cholera,2,2,2,2012-12-20,2015-02-18,0.0,0.0,0.0,50.0
+Uttarakhand,Cholera,2,2,2,2009-12-24,2011-06-02,0.0,0.0,0.0,50.0
+Rajasthan,Acute Encephalitis Syndrome,2,1,2,2011-07-07,2011-07-28,0.0,0.0,0.0,50.0
+Tamil Nadu,Dengue/Chikungunya,2,2,2,2012-05-13,2012-09-10,0.0,0.0,0.0,0.0
+Rajasthan,Dengue And Chikungunya,2,2,2,2016-04-05,2016-08-24,0.0,0.0,0.0,50.0
+Bihar,Cholera,2,2,2,2014-09-08,2014-10-29,0.0,0.0,0.0,0.0
+Haryana,Chikungunya,2,2,2,2011-10-01,2011-10-14,0.0,0.0,0.0,0.0
+Goa,Chikungunya,2,1,2,2009-07-15,2009-12-21,0.0,0.0,0.0,0.0
+Bihar,Acute Gastroenteritis,2,2,2,2016-09-01,2017-06-04,0.0,0.0,0.0,0.0
+Assam,Chikungunya,2,1,2,2016-08-20,2016-10-24,0.0,0.0,0.0,50.0
+Daman and Diu,Acute Diarrhoeal Disease,2,2,2,2009-07-07,2020-03-04,0.0,50.0,100.0,50.0
+Arunachal Pradesh,Acute Gastroenteritis,2,2,2,2017-05-30,2017-11-13,0.0,0.0,0.0,0.0
+Goa,Malaria,2,1,2,2015-09-07,2018-07-24,0.0,50.0,0.0,0.0
+Himachal Pradesh,Suspected Dengue,2,1,1,2017-10-23,2017-10-23,0.0,0.0,0.0,100.0
+Uttarakhand,Malaria,2,2,2,2009-06-19,2021-09-07,0.0,0.0,0.0,0.0
+Madhya Pradesh,Acute Gastroenteritis,2,2,2,2016-02-18,2017-10-20,0.0,0.0,0.0,50.0
+Odisha,Dengue,2,2,2,2010-07-21,2012-09-18,0.0,0.0,0.0,0.0
+Punjab,Acute Gastroenteritis,2,2,2,2016-08-09,2016-08-13,0.0,0.0,0.0,0.0
+Gujarat,Acute Encephalitis Syndrome,2,2,2,2010-07-23,2014-07-19,0.0,50.0,0.0,50.0
+Karnataka,Suspected Dengue,2,2,2,2017-04-02,2019-08-17,0.0,50.0,0.0,0.0
+Andhra Pradesh,Diarrhea,1,1,1,2018-06-02,2018-06-02,0.0,0.0,0.0,100.0
+Arunachal Pradesh,Acute Encephalitis Syndrome,1,1,1,2014-07-10,2014-07-10,0.0,0.0,0.0,0.0
+Bihar,Chikungunya,1,1,1,2011-11-07,2011-11-07,0.0,0.0,0.0,0.0
+Bihar,Dengue And Chikungunya,1,1,1,2016-08-27,2016-08-27,0.0,0.0,0.0,100.0
+Chhattisgarh,Acute Encephalitis Syndrome,1,1,1,2011-07-21,2011-07-21,0.0,100.0,0.0,0.0
+Dadra and Nagar Haveli,Chikungunya,1,1,1,2015-08-22,2015-08-22,0.0,0.0,0.0,0.0
+Jammu and Kashmir,Dengue And Malaria,1,1,1,2012-09-01,2012-09-01,0.0,0.0,0.0,0.0
+Himachal Pradesh,Acute Gastroenteritis,1,1,1,2016-04-25,2016-04-25,0.0,0.0,0.0,0.0
+Himachal Pradesh,Acute Encephalitis Syndrome,1,1,1,2018-05-21,2018-05-21,0.0,0.0,0.0,0.0
+Goa,Cholera,1,1,1,2013-05-30,2013-05-30,0.0,0.0,0.0,0.0
+Mizoram,Acute Gastroenteritis,1,1,1,2017-10-30,2017-10-30,0.0,0.0,0.0,0.0
+Maharashtra,Dengue Fever,1,1,1,2021-06-02,2021-06-02,0.0,0.0,0.0,100.0
+Maharashtra,Malaria (PV),1,1,1,2022-05-04,2022-05-04,0.0,0.0,0.0,0.0
+Maharashtra,Suspected Dengue And Chikungunya,1,1,1,2017-11-10,2017-11-10,0.0,0.0,0.0,0.0
+Madhya Pradesh,Dengue And Malaria,1,1,1,2014-09-01,2014-09-01,0.0,0.0,0.0,0.0
+Maharashtra,Dengue Chikungunya,1,1,1,2021-10-03,2021-10-03,0.0,0.0,0.0,0.0
+Jharkhand,Acute Encephalitis Syndrome,1,1,1,2011-09-30,2011-09-30,0.0,0.0,0.0,100.0
+Jharkhand,Dengue And Chikungunya,1,1,1,2019-10-31,2019-10-31,0.0,0.0,0.0,100.0
+Karnataka,Suspected Cholera,1,1,1,2017-10-23,2017-10-23,0.0,0.0,0.0,100.0
+Kerala,Dengue Fever,1,1,1,2021-05-19,2021-05-19,0.0,0.0,0.0,0.0
+Kerala,Acute Gastroenteritis,1,1,1,2017-10-09,2017-10-09,0.0,0.0,0.0,0.0
+Kerala,Dengue And Chikungunya,1,1,1,2011-12-26,2011-12-26,0.0,0.0,0.0,100.0
+Karnataka,Gastroenteritis,1,1,1,2016-02-01,2016-02-01,0.0,0.0,0.0,100.0
+Nagaland,Acute Diarrhoeal Disease,1,1,1,2016-03-06,2016-03-06,0.0,0.0,0.0,0.0
+Manipur,Acute Gastroenteritis,1,1,1,2016-04-25,2016-04-25,0.0,0.0,0.0,0.0
+Meghalaya,Chikungunya,1,1,1,2017-06-22,2017-06-22,0.0,0.0,0.0,0.0
+Maharashtra,Dengue/Chikungunya,1,1,1,2010-11-17,2010-11-17,0.0,0.0,0.0,100.0
+Punjab,Dengue,1,1,1,2011-05-23,2011-05-23,0.0,0.0,0.0,0.0
+Punjab,Malaria,1,1,1,2011-08-30,2011-08-30,0.0,0.0,0.0,0.0
+Punjab,Suspected Cholera,1,1,1,2019-07-18,2019-07-18,0.0,100.0,0.0,0.0
+Tamil Nadu,pyrexia of unknown origin,1,1,1,2022-01-31,2022-01-31,0.0,0.0,0.0,0.0
+Uttar Pradesh,Chikungunya,1,1,1,2016-09-15,2016-09-15,0.0,0.0,0.0,0.0
+Uttar Pradesh,Acute Gastroenteritis,1,1,1,2016-02-12,2016-02-12,0.0,0.0,0.0,0.0
+Tripura,Acute Gastroenteritis,1,1,1,2017-03-01,2017-03-01,0.0,0.0,0.0,0.0
+Uttar Pradesh,Dengue And Malaria,1,1,1,2016-10-20,2016-10-20,0.0,0.0,0.0,0.0
+West Bengal,Chikungunya/Dengue,1,1,1,2011-09-05,2011-09-05,0.0,0.0,0.0,100.0
+West Bengal,Acute Gastroenteritis,1,1,1,2016-11-02,2016-11-02,0.0,0.0,0.0,0.0
+West Bengal,Chikungunya/ Dengue,1,1,1,2010-10-21,2010-10-21,0.0,0.0,0.0,0.0

@@ -81,6 +81,36 @@
 
         <hr style="margin: 15px 0; border: none; border-top: 1px solid #dee2e6;">
 
+        <section id="historicalPanel" style="border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; margin-bottom: 12px;">
+            <h4 style="margin: 0 0 8px;">Historical Maharashtra ADD</h4>
+            <p style="font-size: 12px; color: #555; margin: 0 0 10px;">
+                Explore recorded district-level Acute Diarrhoeal Disease case counts by year.
+            </p>
+            <button id="historicalModeBtn" type="button" style="width: 100%; padding: 8px; cursor: pointer;">
+                Show Historical Map
+            </button>
+
+            <div id="historicalControls" style="display: none; margin-top: 12px;">
+                <label for="historicalYear" style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 5px;">
+                    Select year
+                </label>
+                <select id="historicalYear" style="width: 100%; padding: 7px; margin-bottom: 8px;"></select>
+
+                <div id="historicalLegend" style="font-size: 12px; margin-bottom: 8px; line-height: 1.8;"></div>
+                <div style="font-size: 12px; margin-bottom: 8px;">
+                    <span style="display:inline-block;width:12px;height:12px;background:#bdbdbd;border:1px solid #777;margin-right:5px;"></span>
+                    No recorded observations
+                </div>
+
+                <div id="historicalStatus" role="status" aria-live="polite"
+                     style="font-size: 12px; color: #444; line-height: 1.5;"></div>
+                <p style="font-size: 11px; color: #666; margin-bottom: 0;">
+                    Values are medians of recorded district-date case counts, not population-adjusted incidence.
+                    Missing observations do not mean zero cases.
+                </p>
+            </div>
+        </section>
+
         <button id="predictBtn" class="btn-predict">Predict +7 Day Expansion</button>
         <div id="predictStatus" style="font-size: 12px; color: #666; text-align: center; margin-top: 6px;"></div>
 
@@ -213,6 +243,7 @@
 
         // 4. Adding new cases embeds the current timeline date
         map.on('click', function(e) {
+            if (historicalMode) return;
             allCases.push({ lat: e.latlng.lat, lng: e.latlng.lng, day: currentDayLimit });
             saveAndRender();
         });
@@ -241,6 +272,232 @@
             link.setAttribute("download", "spatiotemporal_cluster_data.csv");
             link.click();
         });
+
+
+        // Historical Maharashtra ADD mode (separate from synthetic cases)
+        var historicalMode = false;
+        var historicalLayer = null;
+        var historicalData = null;
+        var historicalGeoJSON = null;
+        var syntheticView = null;
+
+        function normalizeDistrictName(value) {
+            return String(value || "").normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase().replace(/[^a-z0-9]/g, "");
+        }
+
+        function historicalColor(value, min, max) {
+            if (value == null || !Number.isFinite(Number(value))) return "#bdbdbd";
+            if (max <= min) return "#2171b5";
+
+            var t = (Number(value) - min) / (max - min);
+            if (t < 0.2) return "#f7fbff";
+            if (t < 0.4) return "#c6dbef";
+            if (t < 0.6) return "#6baed6";
+            if (t < 0.8) return "#3182bd";
+            return "#08519c";
+        }
+
+        function updateHistoricalLegend(min, max) {
+            var legend = document.getElementById("historicalLegend");
+            var colors = ["#f7fbff", "#c6dbef", "#6baed6", "#3182bd", "#08519c"];
+            var labels = [];
+
+            if (max <= min) {
+                labels = ["All observed medians: " + Number(min).toLocaleString()];
+            } else {
+                for (var i = 0; i < colors.length; i++) {
+                    var lower = min + (max - min) * i / colors.length;
+                    var upper = min + (max - min) * (i + 1) / colors.length;
+                    var label = Number(lower).toLocaleString(undefined, { maximumFractionDigits: 1 }) +
+                        (i === colors.length - 1 ? "–" : "–") +
+                        Number(upper).toLocaleString(undefined, { maximumFractionDigits: 1 });
+                    labels.push(label);
+                }
+            }
+
+            legend.innerHTML = colors.map(function(color, index) {
+                return '<div><span style="display:inline-block;width:12px;height:12px;' +
+                    'background:' + color + ';border:1px solid #777;margin-right:5px;' +
+                    'vertical-align:middle;"></span>' + labels[index] + '</div>';
+            }).join("") +
+            '<div><span style="display:inline-block;width:12px;height:12px;' +
+            'background:#bdbdbd;border:1px solid #777;margin-right:5px;' +
+            'vertical-align:middle;"></span>No recorded observations</div>';
+        }
+
+        function renderHistoricalYear() {
+            if (!historicalData || !historicalGeoJSON || !historicalMode) return;
+
+            var year = document.getElementById("historicalYear").value;
+            var districts = historicalData.districts || {};
+            var values = [];
+
+            historicalGeoJSON.features.forEach(function(feature) {
+                var name = feature.properties && feature.properties.district;
+                var record = districts[normalizeDistrictName(name)];
+                var yearRecord = record && record[year];
+
+                if (yearRecord && Number.isFinite(Number(yearRecord.median_cases))) {
+                    values.push(Number(yearRecord.median_cases));
+                }
+            });
+
+            var min = values.length ? Math.min.apply(null, values) : 0;
+            var max = values.length ? Math.max.apply(null, values) : 0;
+            updateHistoricalLegend(min, max);
+
+            if (historicalLayer) map.removeLayer(historicalLayer);
+
+            historicalLayer = L.geoJSON(historicalGeoJSON, {
+                style: function(feature) {
+                    var name = feature.properties && feature.properties.district;
+                    var districtRecord = districts[normalizeDistrictName(name)];
+                    var yearRecord = districtRecord && districtRecord[year];
+                    var value = yearRecord ? Number(yearRecord.median_cases) : null;
+
+                    return {
+                        color: "#555",
+                        weight: 1,
+                        fillColor: historicalColor(value, min, max),
+                        fillOpacity: 0.78
+                    };
+                },
+                onEachFeature: function(feature, layer) {
+                    var name = (feature.properties && feature.properties.district) || "Unknown district";
+                    var districtRecord = districts[normalizeDistrictName(name)];
+                    var record = districtRecord && districtRecord[year];
+
+                    if (!record) {
+                        layer.bindPopup(
+                            "<strong>" + name + "</strong><br>Year: " + year +
+                            "<br>No recorded observations"
+                        );
+                        return;
+                    }
+
+                    layer.bindPopup(
+                        "<strong>" + name + "</strong><br>Year: " + year +
+                        "<br>Median of recorded case counts: " +
+                        Number(record.median_cases).toLocaleString() +
+                        "<br>Recorded observations: " + record.observations
+                    );
+                }
+            }).addTo(map);
+
+            var recorded = values.length;
+            var total = historicalGeoJSON.features.length;
+            document.getElementById("historicalStatus").textContent =
+                "Year: " + year + " | Districts with recorded data: " +
+                recorded + "/" + total +
+                (values.length ? " | Recorded median range: " +
+                    min.toLocaleString() + "–" + max.toLocaleString() : "") +
+                ". Grey districts have no recorded observations for this year.";
+
+            if (historicalLayer.getBounds().isValid()) {
+                map.fitBounds(historicalLayer.getBounds(), {
+                    paddingTopLeft: [20, 20],
+                    paddingBottomRight: [20, 20],
+                    maxZoom: 7,
+                    animate: false
+                });
+            }
+        }
+
+        async function loadHistoricalData() {
+            var status = document.getElementById("historicalStatus");
+            status.textContent = "Loading historical data and district boundaries...";
+
+            try {
+                var responses = await Promise.all([
+                    fetch("./mh_add_historical.json"),
+                    fetch("./data/boundaries/maharashtra_districts.geojson")
+                ]);
+
+                if (!responses[0].ok) {
+                    throw new Error("Could not load mh_add_historical.json (HTTP " + responses[0].status + ")");
+                }
+                if (!responses[1].ok) {
+                    throw new Error("Could not load Maharashtra district boundaries (HTTP " + responses[1].status + ")");
+                }
+
+                historicalData = await responses[0].json();
+                historicalGeoJSON = await responses[1].json();
+
+                var yearSet = new Set();
+                Object.values(historicalData.districts || {}).forEach(function(district) {
+                    Object.keys(district).forEach(function(year) {
+                        if (/^\d{4}$/.test(year)) yearSet.add(year);
+                    });
+                });
+
+                var select = document.getElementById("historicalYear");
+                select.innerHTML = "";
+                Array.from(yearSet).sort().forEach(function(year) {
+                    var option = document.createElement("option");
+                    option.value = year;
+                    option.textContent = year;
+                    select.appendChild(option);
+                });
+
+                if (!yearSet.size) throw new Error("No historical years found in the JSON data.");
+
+                select.value = yearSet.has("2016") ? "2016" : Array.from(yearSet).sort()[0];
+                renderHistoricalYear();
+            } catch (error) {
+                console.error("Historical map loading failed:", error);
+                status.textContent = "Could not load historical map: " + error.message +
+                    ". If opened as a local file, run the app through a local web server.";
+            }
+        }
+
+        document.getElementById("historicalModeBtn").addEventListener("click", async function() {
+            var controls = document.getElementById("historicalControls");
+            var button = document.getElementById("historicalModeBtn");
+
+            if (!historicalMode) {
+                syntheticView = {
+                    center: map.getCenter(),
+                    zoom: map.getZoom()
+                };
+
+                historicalMode = true;
+                controls.style.display = "block";
+                button.textContent = "Return to Synthetic Tracker";
+
+                map.removeLayer(markerLayer);
+                if (outbreakZone) map.removeLayer(outbreakZone);
+                if (predictionLayer) map.removeLayer(predictionLayer);
+
+                document.getElementById("timeSlider").disabled = true;
+                document.getElementById("predictBtn").disabled = true;
+                await loadHistoricalData();
+            } else {
+                historicalMode = false;
+                controls.style.display = "none";
+                button.textContent = "Show Historical Map";
+
+                if (historicalLayer) {
+                    map.removeLayer(historicalLayer);
+                    historicalLayer = null;
+                }
+
+                markerLayer.addTo(map);
+                renderTemporalState();
+
+                if (predictionLayer) predictionLayer.addTo(map);
+
+                document.getElementById("timeSlider").disabled = false;
+                document.getElementById("predictBtn").disabled = false;
+
+                if (syntheticView) {
+                    map.setView(syntheticView.center, syntheticView.zoom);
+                }
+            }
+        });
+
+        document.getElementById("historicalYear").addEventListener("change", renderHistoricalYear);
 
         // 6. Phase 2: AI/statistical prediction of future expansion
         // Point this at your deployed FastAPI service (see phase2_api.py).

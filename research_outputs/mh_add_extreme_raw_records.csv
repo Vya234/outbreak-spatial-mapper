@@ -1,0 +1,16 @@
+Unnamed: 0,week_of_outbreak,state_ut,district,Disease,Cases,Deaths,day,mon,year,Latitude,Longitude,preci,LAI,Temp,date
+370,32nd week,Maharashtra,Kolhapur,Acute Diarrhoeal Disease,215,,10,8,2021,16.7028412,74.2405329,0.1976845208,5.0,298.38,2021-08-10
+612,17th week,Maharashtra,Kolhapur,Acute Diarrhoeal Disease,607,,21,4,2020,16.7028412,74.2405329,0.1258905428,,313.0666666,2020-04-21
+2091,20th week,Maharashtra,Wardha,Acute Diarrhoeal Disease,232,,16,5,2017,20.82562315,78.6131455,0.02417278885,,319.128,2017-05-16
+2186,25th week,Maharashtra,Osmanabad,Acute Diarrhoeal Disease,368,,12,6,2017,18.16984395,76.11796321,0.4001070088,3.0,308.22,2017-06-12
+2592,47th week,Maharashtra,Nashik,Acute Diarrhoeal Disease,251,,17,11,2017,20.0112475,73.7902364,3.38e-05,,303.2033334,2017-11-17
+2659,4th week,Maharashtra,Bhandara,Acute Diarrhoeal Disease,219,,21,1,2016,21.12304765,79.79390882,0.01380323873,9.0,300.432,2016-01-21
+2885,21st week,Maharashtra,Nagpur,Acute Diarrhoeal Disease,194,,25,5,2016,21.1498134,79.0820556,0.002984117905,4.0,319.585,2016-05-25
+2886,21st week,Maharashtra,Nashik,Acute Diarrhoeal Disease,409,,25,5,2016,20.0112475,73.7902364,0.02762493964,5.0,310.56,2016-05-25
+2918,22nd week,Maharashtra,Nagpur,Acute Diarrhoeal Disease,208,,31,5,2016,21.1498134,79.0820556,4.87e-05,,318.76,2016-05-31
+3053,25th week,Maharashtra,Thane,Acute Diarrhoeal Disease,389,,11,6,2016,19.1943294,72.9701779,0.1076939772,6.0,312.46,2016-06-11
+4621,4th week,Maharashtra,Sindhudurg,Acute Diarrhoeal Disease,234,,22,1,2014,16.1357193,73.6522086,0.0008312651703,14.0,302.3833334,2014-01-22
+6566,26th week,Maharashtra,Kolhapur,Acute Diarrhoeal Disease,196,,24,6,2012,16.7028412,74.2405329,0.618424487,,301.38,2012-06-24
+6803,35th week,Maharashtra,Nanded,Acute Diarrhoeal Disease,204,,24,8,2012,19.09400875,77.48319215,0.7631348007,7.0,,2012-08-24
+7378,26th week,Maharashtra,Pune,Acute Diarrhoeal Disease,311,0.0,20,6,2011,18.521428,73.8544541,0.5102087662,4.0,300.08,2011-06-20
+8241,26th week,Maharashtra,Nashik,Acute Diarrhoeal Disease,235,,17,6,2010,20.0112475,73.7902364,1.424238524,,306.62,2010-06-17

@@ -1,0 +1,18 @@
+EpiClim Maharashtra ADD analysis
+Source file: /home/kavya/outbreak-spatial-mapper/data/Final_data.csv
+Rows selected: 445
+Valid date/case observations: 445
+Districts: 35
+Date range: 2009-07-23 00:00:00 to 2022-06-15 00:00:00
+Rows flagged as exact-duplicate candidates: 2
+
+Missing values:
+Cases      0
+Temp      54
+preci      0
+LAI      120
+
+Important limitation:
+Recorded dates and week labels have not been reconciled.
+No missing reporting period is assumed to represent zero cases.
+Duplicate candidates are flagged, not automatically removed.

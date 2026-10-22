@@ -1,0 +1,3 @@
+Model,MAE,RMSE
+Training median (same test rows),34.916666666666664,76.36199815290824
+Random Forest + previous case,36.13637941148359,72.50725144888942
