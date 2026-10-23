@@ -1,0 +1,21 @@
+Unnamed: 0,week_of_outbreak,state_ut,district,Disease,Cases,Deaths,day,mon,year,Latitude,Longitude,preci,LAI,Temp,duplicate_group
+8673,26th week,Karnataka,Tumkur,Acute Diarrhoeal Disease,10,3.0,25,6,2009,13.3400771,77.1006208,0.2868031124,,305.7066666,1
+8676,26th week,Karnataka,Tumkur,Acute Diarrhoeal Disease,10,3.0,25,6,2009,13.3400771,77.1006208,0.2868031124,,305.7066666,1
+6706,32nd week,Bihar,Nalanda,Acute Diarrhoeal Disease,18,,5,8,2012,25.1364914,85.44365465,0.6981577533,6.0,291.8,2
+6707,32nd week,Bihar,Nalanda,Acute Diarrhoeal Disease,18,,5,8,2012,25.1364914,85.44365465,0.6981577533,6.0,291.8,2
+3345,33rd week,Bihar,Bhabua,Acute Diarrhoeal Disease,13,,20,8,2016,25.07634815,83.63359776,1.448337752,,299.0333334,3
+3346,33rd week,Bihar,Bhabua,Acute Diarrhoeal Disease,13,,20,8,2016,25.07634815,83.63359776,1.448337752,,299.0333334,3
+5077,38th week,West Bengal,South Parganas,Acute Diarrhoeal Disease,115,,18,9,2014,22.5760669,88.42006758,0.1911812722,12.0,301.536,4
+5078,38th week,West Bengal,South Parganas,Acute Diarrhoeal Disease,115,,18,9,2014,22.5760669,88.42006758,0.1911812722,12.0,301.536,4
+2,3rd week,Tamil Nadu,Pudukottai,Acute Diarrhoeal Disease,8,,18,1,2022,10.3826515,78.8191259,0.1074129745,12.0,300.7666666,5
+5,3rd week,Tamil Nadu,Pudukottai,Acute Diarrhoeal Disease,8,,18,1,2022,10.3826515,78.8191259,0.1074129745,12.0,300.7666666,5
+1214,42nd week,Kerala,Ernakulam,Dengue,18,,14,10,2019,9.98408,76.2741457,0.6994130118,31.0,302.855,6
+1215,42nd week,Kerala,Ernakulam,Dengue,18,,14,10,2019,9.98408,76.2741457,0.6994130118,31.0,302.855,6
+5188,45th week,Maharashtra,Thane,Acute Diarrhoeal Disease,194,,30,10,2014,19.1943294,72.9701779,0.05834864708,17.0,304.84000000000003,7
+5190,45th week,Maharashtra,Thane,Acute Diarrhoeal Disease,194,,30,10,2014,19.1943294,72.9701779,0.05834864708,17.0,304.84000000000003,7
+7921,48th week,Jharkhand,Dumka,Malaria,746,1.0,15,11,2010,24.2538512,87.30064714,0.02855312357,11.0,302.99,8
+8603,48th week,Jharkhand,Dumka,Malaria,746,1.0,15,11,2010,24.2538512,87.30064714,0.02855312357,11.0,302.99,8
+13,9th week,Kerala,Ernakulam,Acute Diarrhoeal Disease,21,,24,2,2022,9.98408,76.2741457,0.05127556617,40.0,302.8933334,9
+16,9th week,Kerala,Ernakulam,Acute Diarrhoeal Disease,21,,24,2,2022,9.98408,76.2741457,0.05127556617,40.0,302.8933334,9
+15,9th week,West Bengal,North 24 Parganas,Acute Diarrhoeal Disease,359,,5,3,2022,22.642931,88.8930579,0.0127255705,,299.72,10
+19,9th week,West Bengal,North 24 Parganas,Acute Diarrhoeal Disease,359,,5,3,2022,22.642931,88.8930579,0.0127255705,,299.72,10

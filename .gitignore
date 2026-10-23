@@ -1,13 +1,17 @@
-# Python-generated files
+# Python cache and environments
 __pycache__/
 *.py[cod]
-
-# Local backups
-*.backup
-*.backup-*
-*.bak
-
-# Local environment files
-.env
 .venv/
 venv/
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local editor and OS files
+.vscode/
+.idea/
+.DS_Store

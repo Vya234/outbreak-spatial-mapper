@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BTP Research Report</title>
+<style>
+@page {
+    size: A4;
+    margin: 22mm 20mm 22mm 25mm;
+}
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11pt;
+    line-height: 1.55;
+    color: #222;
+    max-width: 900px;
+    margin: 35px auto;
+    padding: 0 25px;
+}
+h1, h2, h3, h4 {
+    color: #17365D;
+    line-height: 1.25;
+    page-break-after: avoid;
+}
+h1 {
+    font-size: 23pt;
+    border-bottom: 2px solid #17365D;
+    padding-bottom: 8px;
+}
+h2 { font-size: 17pt; margin-top: 28px; }
+h3 { font-size: 13pt; margin-top: 22px; }
+p { text-align: justify; }
+img {
+    display: block;
+    max-width: 100%;
+    max-height: 165mm;
+    height: auto;
+    margin: 18px auto;
+    page-break-inside: avoid;
+    page-break-after: avoid;
+    break-inside: avoid-page;
+}
+img + p {
+    page-break-before: avoid;
+    break-before: avoid-page;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 9pt;
+    page-break-inside: auto;
+}
+th, td {
+    border: 1px solid #bbb;
+    padding: 6px 8px;
+    text-align: left;
+}
+th { background: #eaf0f7; }
+tr { page-break-inside: avoid; }
+pre, code {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+blockquote {
+    border-left: 3px solid #8aa4c8;
+    margin-left: 0;
+    padding-left: 15px;
+    color: #555;
+}
+a { color: #174a7e; overflow-wrap: anywhere; }
+@media print {
+    body { max-width: none; margin: 0; padding: 0; }
+    a { color: inherit; text-decoration: none; }
+    h1, h2, h3 { page-break-after: avoid; }
+}
+</style>
+</head>
+<body>
+<h1 id="spatial-analytics-engine-for-disease-outbreaks">Spatial Analytics Engine for Disease Outbreaks</h1>
+<h2 id="gis-based-spatio-temporal-analysis-and-exploratory-forecasting">GIS-Based Spatio-Temporal Analysis and Exploratory Forecasting</h2>
+<p><strong>Project:</strong> Spatial Analytics Engine for Disease Outbreaks<br />
+<strong>Research focus:</strong> Spatial epidemiology, temporal analysis, and exploratory forecasting<br />
+<strong>Study area:</strong> Maharashtra, India, with selected analyses of other Indian states<br />
+<strong>Dataset period:</strong> 2009–2022<br />
+<strong>Supervisor:</strong> Prof. Pabitra Mitra, IIT Kharagpur</p>
+<hr />
+<h2 id="abstract">Abstract</h2>
+<p>This project develops a geographic information system (GIS) for visualizing
+disease outbreak locations, analyzing spatial footprints, and exploring
+spatio-temporal forecasting methods. The application combines an interactive
+web interface, geospatial processing, a Python data-engineering pipeline, and
+a FastAPI prediction service.</p>
+<p>The research component investigates recorded Acute Diarrhoeal Disease (ADD)
+cases in Maharashtra using district-level spatial summaries, temporal
+visualizations, spatial autocorrelation analysis, period-wise comparisons,
+and exploratory case-count prediction experiments.</p>
+<p>The prepared Maharashtra ADD analysis contains 445 records. Reporting
+coverage varies substantially across the study period, with 178 records in
+2009–2013, 225 in 2014–2018, and 42 in 2019–2022. Among 15 districts meeting
+the minimum observation requirement in both of the first two periods, eight
+showed an increase and seven showed a decrease in median recorded cases.
+Neither the Wilcoxon signed-rank test nor the sign test identified a
+statistically significant directional shift. Global Moran's I analysis also
+did not identify statistically significant spatial autocorrelation in
+district-level median cases.</p>
+<p>Exploratory forecasting experiments compared a training-median baseline,
+district-and-month features, and district, month, and climate features across
+three chronological cutoffs. Climate features consistently reduced RMSE
+relative to the district-and-month model, but the models did not consistently
+outperform the median baseline on mean absolute error. Since climate
+measurements were taken from the target dates, these experiments should be
+interpreted as retrospective case-count prediction, not validated operational
+forecasting.</p>
+<p>The project demonstrates an integrated GIS and analytical workflow while
+highlighting the importance of reporting coverage, evaluation design, and
+careful interpretation of sparse epidemiological data.</p>
+<p><strong>Keywords:</strong> GIS, spatial epidemiology, outbreak mapping, spatio-temporal
+analysis, Moran's I, Random Forest, climate features, disease surveillance.</p>
+<hr />
+<h2 id="1-introduction">1. Introduction</h2>
+<p>Disease surveillance data can help researchers understand where cases are
+recorded, how reported counts vary over time, and whether spatial patterns
+warrant further investigation. However, surveillance records are often
+irregular, incomplete, and affected by changes in reporting practices.
+Analytical systems must therefore communicate both observed patterns and
+uncertainty.</p>
+<p>This project combines an interactive GIS application with an analytical
+workflow for investigating recorded outbreak data. The engineering component
+supports geographic visualization and exploratory prediction, while the
+research component examines whether the available records support meaningful
+spatial, temporal, and predictive conclusions.</p>
+<h3 id="11-problem-statement">1.1 Problem statement</h3>
+<p>A useful outbreak-analysis system must do more than display case locations.
+It should support spatial footprint estimation, temporal exploration,
+structured data processing, and evaluation of predictive methods against
+simple baselines.</p>
+<p>At the same time, sparse and irregular surveillance data create important
+limitations. An apparent increase in recorded cases may reflect changing
+reporting coverage rather than a genuine increase in disease incidence.
+Similarly, a model that fits historical observations does not necessarily
+predict future outbreak expansion accurately.</p>
+<h3 id="12-objectives">1.2 Objectives</h3>
+<ol>
+<li>Develop an interactive GIS interface for visualizing outbreak locations
+   and their geographic footprint.</li>
+<li>Implement spatial processing and data-export functionality.</li>
+<li>Build a data-engineering and API pipeline for exploratory prediction.</li>
+<li>Analyze district-level and monthly patterns in Maharashtra ADD records.</li>
+<li>Examine spatial autocorrelation using Global Moran's I and local spatial
+   statistics.</li>
+<li>Compare exploratory case-count models with a simple training-median
+   baseline using chronological evaluation.</li>
+<li>Document data-quality issues, uncertainty, and limitations affecting
+   interpretation.</li>
+</ol>
+<hr />
+<h2 id="2-system-architecture-and-implementation">2. System Architecture and Implementation</h2>
+<h3 id="21-interactive-gis-frontend">2.1 Interactive GIS frontend</h3>
+<p>The frontend uses HTML, JavaScript, Leaflet.js, and OpenStreetMap tiles to
+display geographic locations and outbreak boundaries.</p>
+<p>The principal capabilities include:</p>
+<ul>
+<li>Interactive placement and management of case-coordinate points.</li>
+<li>Convex-hull computation using the Monotone Chain algorithm.</li>
+<li>Geographic area estimation using Turf.js.</li>
+<li>Timeline controls for exploring outbreak scenarios.</li>
+<li>CSV export of coordinate data.</li>
+<li>Local persistence of interactive data using browser local storage.</li>
+<li>Historical district-level visualization using prepared summaries and
+  district boundaries.</li>
+</ul>
+<p>The convex hull represents the smallest convex polygon enclosing the
+provided points. It is a geometric footprint, not a probability distribution
+or a validated estimate of the actual area affected by disease transmission.</p>
+<h3 id="22-data-engineering-pipeline">2.2 Data-engineering pipeline</h3>
+<p>The Python data-engineering workflow processes coordinate-based observations
+into daily features, including case counts, centroids, and geographic spread
+summaries.</p>
+<p>Great-circle distances can be calculated using the Haversine formula to
+estimate distances between geographic coordinates. These features provide
+inputs for exploratory spatial and temporal analysis.</p>
+<p>The interpretation of daily aggregates depends on the meaning and timing of
+the input records. Synthetic or manually entered points must not be treated
+as observed epidemiological surveillance data.</p>
+<h3 id="23-prediction-backend">2.3 Prediction backend</h3>
+<p>The prediction service is implemented using FastAPI and exposes a prediction
+endpoint for frontend requests.</p>
+<p>The implemented forecasting components include:</p>
+<ul>
+<li>Polynomial trend extrapolation for spatial drift.</li>
+<li>A Susceptible-Infected-Recovered (SIR) compartmental model.</li>
+<li>Numerical parameter fitting against cumulative case curves.</li>
+<li>A heuristic that combines projected spatial radius with the fitted
+  epidemiological component.</li>
+<li>A frontend overlay showing the projected expansion zone.</li>
+</ul>
+<p>The SIR model uses susceptible, infected, and recovered compartments and
+differential equations to represent a simplified transmission process.
+Its parameters and outputs depend on the validity of the input time series,
+initial conditions, and population assumptions.</p>
+<p>The current spatial projection is a heuristic combination of trend
+extrapolation and the fitted SIR component. It should not be described as a
+validated estimate of future geographic spread without independent spatial
+forecast evaluation.</p>
+<h3 id="24-deployment">2.4 Deployment</h3>
+<p>The frontend is deployed on Vercel and the FastAPI backend is hosted on
+Render. This separates the interactive user interface from the prediction
+service.</p>
+<p>Live demo: https://outbreak-spatial-mapper.vercel.app/</p>
+<p>Repository: https://github.com/Vya234/outbreak-spatial-mapper</p>
+<hr />
+<h2 id="3-dataset-and-data-preparation">3. Dataset and Data Preparation</h2>
+<h3 id="31-source-and-variables">3.1 Source and variables</h3>
+<p>The research uses an EpiClim dataset supplied for the project. The dataset
+contains disease records spanning 2009–2022 and includes fields for disease,
+cases, deaths, reporting week, date components, state, district, coordinates,
+and environmental variables.</p>
+<p>The original fields include:</p>
+<ul>
+<li>Disease and case counts.</li>
+<li>Death counts.</li>
+<li>State and district names.</li>
+<li>Day, month, and year.</li>
+<li>Latitude and longitude.</li>
+<li>Precipitation (<code>preci</code>).</li>
+<li>Leaf Area Index (<code>LAI</code>).</li>
+<li>Temperature (<code>Temp</code>).</li>
+<li>An index-like column named <code>Unnamed: 0</code>.</li>
+</ul>
+<p>The Maharashtra ADD spatial-temporal analysis uses 445 prepared records.
+Other analyses use different disease and state subsets; their sample sizes
+must be reported separately.</p>
+<h3 id="32-data-quality-assessment">3.2 Data-quality assessment</h3>
+<p>The broader dataset contains 8,985 rows. The initial audit identified the
+following missing-value proportions:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th style="text-align: right;">Missing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Deaths</td>
+<td style="text-align: right;">71.6%</td>
+</tr>
+<tr>
+<td>Precipitation</td>
+<td style="text-align: right;">1.5%</td>
+</tr>
+<tr>
+<td>Leaf Area Index</td>
+<td style="text-align: right;">24.4%</td>
+</tr>
+<tr>
+<td>Temperature</td>
+<td style="text-align: right;">10.4%</td>
+</tr>
+</tbody>
+</table>
+<p>An exact-duplicate audit identified 10 duplicate groups involving 20 rows
+when the index-like <code>Unnamed: 0</code> field was excluded from comparison. These
+groups included eight Acute Diarrhoeal Disease groups, one Dengue group, and
+one Malaria group.</p>
+<p>Potential duplicate records require source-level interpretation. Repeated
+entries may reflect duplicated ingestion, repeated bulletins, or separate
+reports. Therefore, the audit does not automatically justify deleting
+records from the source dataset.</p>
+<p>The stored outbreak-week field matched the ISO calendar week for 3,631 of
+8,985 records (40.4%). This discrepancy does not establish that the stored
+week is incorrect: it may represent a reporting or bulletin week. The field
+should not be overwritten without a documented definition.</p>
+<h3 id="33-irregular-sampling">3.3 Irregular sampling</h3>
+<p>The Maharashtra ADD observations are irregularly sampled. Dates do not
+represent a complete daily or weekly series, and districts have different
+numbers of observations.</p>
+<p>Consequently:</p>
+<ul>
+<li>Missing dates must not automatically be interpreted as zero cases.</li>
+<li>A previous recorded observation is not necessarily a one-week lag.</li>
+<li>Comparisons should disclose observation counts and reporting coverage.</li>
+<li>Forecasting evaluations must preserve chronological order.</li>
+<li>Claims about incidence require appropriate population denominators and
+  information about surveillance coverage.</li>
+</ul>
+<h3 id="34-external-record-validation">3.4 External record validation</h3>
+<p>A subset of records was checked against manually inspected NCDC/IDSP weekly
+bulletin text. The validation file contains 13 selected records marked
+<code>MATCH</code>.</p>
+<p>This establishes agreement for those checked entries only. It does not
+establish that every row in the complete dataset is correct or that the
+dataset is free from duplication.</p>
+<hr />
+<h2 id="4-spatio-temporal-analysis-of-maharashtra-add">4. Spatio-Temporal Analysis of Maharashtra ADD</h2>
+<h3 id="41-study-subset-and-period-grouping">4.1 Study subset and period grouping</h3>
+<p>The analysis uses 445 prepared Maharashtra ADD records grouped into three
+periods:</p>
+<table>
+<thead>
+<tr>
+<th>Period</th>
+<th style="text-align: right;">Districts observed</th>
+<th style="text-align: right;">Records</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2009–2013</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">178</td>
+</tr>
+<tr>
+<td>2014–2018</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">225</td>
+</tr>
+<tr>
+<td>2019–2022</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">42</td>
+</tr>
+</tbody>
+</table>
+<p>District medians were calculated from available observations. Districts
+without observations in a period were left unreported rather than assigned
+zero.</p>
+<p>The district labels Sholapur and Solapur were normalized for spatial
+comparison. The raw source labels should remain preserved in the original
+data.</p>
+<h3 id="42-period-wise-district-comparison">4.2 Period-wise district comparison</h3>
+<p>A district was included in a pairwise comparison only if it had at least
+five observations in both periods. This practical threshold reduces
+comparisons based on extremely small samples but does not guarantee
+statistical reliability.</p>
+<p>Fifteen districts met this criterion for 2009–2013 versus 2014–2018:</p>
+<ul>
+<li>Eight districts had higher median recorded cases.</li>
+<li>Seven districts had lower median recorded cases.</li>
+<li>The median district-level change was +6 cases.</li>
+<li>The mean district-level change was -4.97 cases.</li>
+</ul>
+<p>Examples of observed changes include:</p>
+<table>
+<thead>
+<tr>
+<th>District</th>
+<th style="text-align: right;">Earlier median</th>
+<th style="text-align: right;">Later median</th>
+<th style="text-align: right;">Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gadchiroli</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">54</td>
+<td style="text-align: right;">+29</td>
+</tr>
+<tr>
+<td>Nanded</td>
+<td style="text-align: right;">21.5</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">+17.5</td>
+</tr>
+<tr>
+<td>Sangli</td>
+<td style="text-align: right;">95</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">-48</td>
+</tr>
+<tr>
+<td>Pune</td>
+<td style="text-align: right;">131</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">-95</td>
+</tr>
+</tbody>
+</table>
+<p>The mean change was influenced by large decreases in some districts. These
+statistics describe recorded counts, not population-adjusted incidence.</p>
+<h3 id="43-statistical-tests">4.3 Statistical tests</h3>
+<p>For the 15 districts comparable across 2009–2013 and 2014–2018:</p>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th style="text-align: right;">Statistic</th>
+<th style="text-align: right;">p-value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wilcoxon signed-rank test</td>
+<td style="text-align: right;">51.5</td>
+<td style="text-align: right;">0.629</td>
+</tr>
+<tr>
+<td>Two-sided sign test</td>
+<td style="text-align: right;">—</td>
+<td style="text-align: right;">1.000</td>
+</tr>
+</tbody>
+</table>
+<p>Neither test provided evidence of a consistent directional shift at the
+conventional 5% significance level.</p>
+<p>This does not prove that disease incidence remained stable. The comparison
+is exploratory and is affected by sparse observations, changing reporting
+coverage, and the practical inclusion threshold.</p>
+<p>Only Kolhapur met the minimum observation requirement in both 2014–2018 and
+2019–2022. Therefore, a meaningful statewide comparison involving the final
+period was not possible under this criterion.</p>
+<h3 id="44-monthly-timeline-and-reporting-coverage">4.4 Monthly timeline and reporting coverage</h3>
+<p>The monthly timeline covers July 2009 to June 2022 and reindexes the data to
+a complete calendar of 156 months.</p>
+<ul>
+<li>Months without observations: 40.</li>
+<li>Observed months with fewer than three records: 55.</li>
+<li>The largest observed monthly median was 607 cases in April 2020.</li>
+<li>That value came from a single record from one district.</li>
+</ul>
+<p>The April 2020 value must not be interpreted as a statewide outbreak peak.
+The monthly visualization presents reporting counts, districts reporting,
+and median recorded cases. Months with limited reporting are explicitly
+identified, and missing months are retained as missing rather than set to
+zero.</p>
+<p>The case-summary panel uses a logarithmic vertical axis. Its values should
+therefore be interpreted on a log scale.</p>
+<p>The timeline describes the available records; it does not establish
+continuous disease incidence, a causal trend, or reliable seasonality.</p>
+<hr />
+<h2 id="5-spatial-autocorrelation-analysis">5. Spatial Autocorrelation Analysis</h2>
+<h3 id="51-method">5.1 Method</h3>
+<p>Global Moran's I was used to assess whether district-level case summaries
+exhibited spatial autocorrelation under the selected district-neighbour
+definition. Local Indicators of Spatial Association (LISA) were also used
+to explore local spatial patterns.</p>
+<p>The analysis normalized Sholapur to Solapur to align the data with the
+district boundary layer. The matched spatial analysis contained 34 districts.</p>
+<h3 id="52-global-morans-i-results">5.2 Global Moran's I results</h3>
+<table>
+<thead>
+<tr>
+<th>District summary</th>
+<th style="text-align: right;">Moran's I</th>
+<th style="text-align: right;">Permutation p-value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Median cases</td>
+<td style="text-align: right;">-0.0050</td>
+<td style="text-align: right;">0.3551</td>
+</tr>
+<tr>
+<td>Mean cases</td>
+<td style="text-align: right;">0.1048</td>
+<td style="text-align: right;">0.1226</td>
+</tr>
+<tr>
+<td>Maximum cases</td>
+<td style="text-align: right;">0.0018</td>
+<td style="text-align: right;">0.3585</td>
+</tr>
+</tbody>
+</table>
+<p>None of the three global statistics was significant at the 5% level.</p>
+<p>A robustness analysis varying the minimum number of observations per
+district also produced non-significant global Moran's I results. The number
+of included districts decreased as the threshold increased, reducing the
+coverage of the analysis.</p>
+<h3 id="53-local-patterns">5.3 Local patterns</h3>
+<p>The median-case LISA classification contained 29 districts labelled not
+significant, three Low-High districts, and two High-Low districts.</p>
+<p>These local classifications are exploratory and should be interpreted
+alongside the global results, sample sizes, spatial weights, and multiple
+testing considerations. They do not independently establish disease
+transmission between neighbouring districts.</p>
+<h3 id="54-interpretation">5.4 Interpretation</h3>
+<p>The current analysis did not detect statistically significant global
+spatial autocorrelation in the selected district-level summaries.</p>
+<p>This is not evidence that geographic factors are irrelevant. District
+summaries, sparse observations, reporting differences, and the chosen
+spatial-neighbour definition can all influence the results.</p>
+<hr />
+<h2 id="6-exploratory-case-count-prediction">6. Exploratory Case-Count Prediction</h2>
+<h3 id="61-research-question">6.1 Research question</h3>
+<p>The predictive experiments investigate whether district identity, calendar
+month, and climate variables help predict recorded case counts compared
+with a simple baseline.</p>
+<p>These experiments are separate from the frontend's heuristic prediction
+of geographic expansion. Good performance on case-count prediction would
+not, by itself, validate a forecast of future outbreak boundaries.</p>
+<h3 id="62-models">6.2 Models</h3>
+<p>Three models were compared:</p>
+<ol>
+<li><strong>Training-median baseline:</strong> predicts the median case count in the
+   training data.</li>
+<li><strong>District + month:</strong> a Random Forest model using district identity and
+   calendar month.</li>
+<li><strong>District + month + climate:</strong> a Random Forest model adding temperature,
+   precipitation, and Leaf Area Index.</li>
+</ol>
+<p>The Random Forest experiments used 300 trees, a minimum leaf size of five,
+and a fixed random seed. District identity was one-hot encoded. Climate
+experiments used rows with complete climate measurements.</p>
+<h3 id="63-chronological-evaluation">6.3 Chronological evaluation</h3>
+<p>The fair model comparison used chronological cutoffs and matched
+climate-complete test rows for all three models at each cutoff.</p>
+<table>
+<thead>
+<tr>
+<th>Cutoff</th>
+<th>Model</th>
+<th style="text-align: right;">Training rows</th>
+<th style="text-align: right;">Test rows</th>
+<th style="text-align: right;">MAE</th>
+<th style="text-align: right;">RMSE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2015-08-21</td>
+<td>Training median</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">108</td>
+<td style="text-align: right;">40.681</td>
+<td style="text-align: right;">76.476</td>
+</tr>
+<tr>
+<td>2015-08-21</td>
+<td>District + month</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">108</td>
+<td style="text-align: right;">40.780</td>
+<td style="text-align: right;">70.657</td>
+</tr>
+<tr>
+<td>2015-08-21</td>
+<td>District + month + climate</td>
+<td style="text-align: right;">172</td>
+<td style="text-align: right;">108</td>
+<td style="text-align: right;">39.967</td>
+<td style="text-align: right;">70.515</td>
+</tr>
+<tr>
+<td>2016-06-06</td>
+<td>Training median</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">38.281</td>
+<td style="text-align: right;">69.964</td>
+</tr>
+<tr>
+<td>2016-06-06</td>
+<td>District + month</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">39.489</td>
+<td style="text-align: right;">67.696</td>
+</tr>
+<tr>
+<td>2016-06-06</td>
+<td>District + month + climate</td>
+<td style="text-align: right;">200</td>
+<td style="text-align: right;">80</td>
+<td style="text-align: right;">37.346</td>
+<td style="text-align: right;">67.472</td>
+</tr>
+<tr>
+<td>2017-09-06</td>
+<td>Training median</td>
+<td style="text-align: right;">230</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">30.810</td>
+<td style="text-align: right;">44.437</td>
+</tr>
+<tr>
+<td>2017-09-06</td>
+<td>District + month</td>
+<td style="text-align: right;">230</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">34.099</td>
+<td style="text-align: right;">43.102</td>
+</tr>
+<tr>
+<td>2017-09-06</td>
+<td>District + month + climate</td>
+<td style="text-align: right;">230</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">32.943</td>
+<td style="text-align: right;">41.663</td>
+</tr>
+</tbody>
+</table>
+<p>MAE is mean absolute error; RMSE is root mean squared error. Lower values
+indicate better performance.</p>
+<h3 id="64-results">6.4 Results</h3>
+<p>Across all three cutoffs, adding climate features reduced RMSE relative to
+the district-and-month model. The climate model also reduced MAE relative
+to that model at each cutoff.</p>
+<p>Relative to the training-median baseline, the climate model achieved:</p>
+<table>
+<thead>
+<tr>
+<th>Cutoff</th>
+<th style="text-align: right;">MAE improvement</th>
+<th style="text-align: right;">RMSE improvement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2015-08-21</td>
+<td style="text-align: right;">1.75%</td>
+<td style="text-align: right;">7.80%</td>
+</tr>
+<tr>
+<td>2016-06-06</td>
+<td style="text-align: right;">2.44%</td>
+<td style="text-align: right;">3.56%</td>
+</tr>
+<tr>
+<td>2017-09-06</td>
+<td style="text-align: right;">-6.92%</td>
+<td style="text-align: right;">6.24%</td>
+</tr>
+</tbody>
+</table>
+<p>Positive improvement means lower error than the baseline; negative
+improvement means worse performance.</p>
+<p>Thus, the climate model consistently improved RMSE over the median baseline
+in these experiments but did not consistently improve MAE. The findings
+suggest that climate variables may help reduce larger prediction errors,
+but the evidence does not establish a uniformly superior predictive model.</p>
+<p>The test windows overlap across cutoffs, so these results should not be
+treated as three independent replications.</p>
+<h3 id="65-important-forecasting-limitation">6.5 Important forecasting limitation</h3>
+<p>The climate variables were measured on the same dates as the target case
+counts. Consequently, the experiment is a retrospective prediction exercise
+using contemporaneous climate data. In a genuine future forecast, these
+inputs would need to be available at prediction time, for example through
+lagged climate observations or weather forecasts.</p>
+<p>The evaluation predicts recorded case counts at observed dates. It does not
+validate future geographic spread, the SIR-derived radius multiplier, or the
+accuracy of the frontend's predicted expansion boundary.</p>
+<hr />
+<h2 id="7-discussion">7. Discussion</h2>
+<p>The project integrates geospatial software engineering with exploratory
+epidemiological analysis. Its primary strengths are the interactive spatial
+interface, modular backend, reproducible analytical scripts, explicit
+reporting-coverage analysis, and comparison of predictive models against a
+simple baseline.</p>
+<p>The research results also demonstrate why data limitations must be part of
+the analysis rather than an afterthought.</p>
+<p>First, uneven reporting makes it difficult to interpret changes in recorded
+cases as changes in disease incidence. Second, global spatial autocorrelation
+was not statistically significant for the selected district summaries.
+Third, climate features improved RMSE consistently across the tested
+chronological cutoffs, but the models did not consistently outperform the
+median baseline on MAE.</p>
+<p>These findings are not failures of the project. They identify which
+conclusions are supported by the available data and where stronger
+validation is needed.</p>
+<hr />
+<h2 id="8-limitations">8. Limitations</h2>
+<ol>
+<li><strong>Reporting coverage:</strong> Observation counts vary across districts, years,
+   and months.</li>
+<li><strong>Irregular sampling:</strong> The data do not form a complete daily or weekly
+   surveillance series.</li>
+<li><strong>Missing values:</strong> Death and climate variables have missing observations.</li>
+<li><strong>Case-count interpretation:</strong> Recorded counts are not population-adjusted
+   incidence rates.</li>
+<li><strong>Duplicate ambiguity:</strong> Repeated entries require source-level
+   interpretation before removal.</li>
+<li><strong>Limited external validation:</strong> Only a small selected subset was checked
+   against IDSP bulletin text.</li>
+<li><strong>Spatial aggregation:</strong> District-level summaries can conceal local
+   variation within districts.</li>
+<li><strong>Prediction inputs:</strong> Contemporaneous climate measurements limit the
+   operational interpretation of the retrospective experiment.</li>
+<li><strong>Forecast validation:</strong> The geographic expansion heuristic has not yet
+   been independently validated against held-out future outbreak boundaries.</li>
+<li><strong>Uncertainty:</strong> Fixed radius adjustments and limited empirical
+    uncertainty calibration do not establish statistically calibrated
+    prediction intervals.</li>
+<li><strong>Generalizability:</strong> Results for Maharashtra ADD cannot automatically
+    be generalized to other diseases or states.</li>
+</ol>
+<hr />
+<h2 id="9-future-work">9. Future Work</h2>
+<h3 id="91-strengthen-data-validation">9.1 Strengthen data validation</h3>
+<ul>
+<li>Document the source definitions of reporting week, case counts, and
+  repeated records.</li>
+<li>Preserve original records and maintain an auditable preprocessing log.</li>
+<li>Expand bulletin validation using a defined sampling strategy.</li>
+<li>Investigate district-name and geographic-boundary mismatches.</li>
+</ul>
+<h3 id="92-improve-temporal-analysis">9.2 Improve temporal analysis</h3>
+<ul>
+<li>Continue displaying the number of reporting districts alongside case
+  summaries.</li>
+<li>Explore models appropriate for irregular observations.</li>
+<li>Assess whether the available coverage supports seasonal analysis before
+  making seasonal claims.</li>
+<li>Separate reporting-process changes from possible epidemiological changes.</li>
+</ul>
+<h3 id="93-improve-forecasting-evaluation">9.3 Improve forecasting evaluation</h3>
+<ul>
+<li>Evaluate models using strictly chronological splits.</li>
+<li>Compare against appropriate baselines on identical test observations.</li>
+<li>Use lagged or genuinely forecast-available climate inputs.</li>
+<li>Report errors by disease, district, forecast horizon, and coverage level.</li>
+<li>Keep case-count evaluation separate from spatial expansion evaluation.</li>
+<li>Validate geographic forecasts against held-out future observations before
+  claiming operational usefulness.</li>
+<li>Estimate uncertainty empirically and test its calibration.</li>
+</ul>
+<h3 id="94-spatial-and-epidemiological-extensions">9.4 Spatial and epidemiological extensions</h3>
+<ul>
+<li>Investigate spatial and spatio-temporal models if data density permits.</li>
+<li>Examine alternative spatial weights and sensitivity to district coverage.</li>
+<li>Explore prediction of newly affected regions only after defining a
+  reliable event-level target and validation protocol.</li>
+<li>Consider population denominators and additional covariates where
+  appropriate data are available.</li>
+</ul>
+<hr />
+<h2 id="10-conclusion">10. Conclusion</h2>
+<p>This project presents an integrated GIS application and an exploratory
+research workflow for disease-outbreak analysis. It combines interactive
+geographic visualization, convex-hull-based spatial footprints, data
+processing, a prediction API, district-level spatio-temporal analysis,
+spatial autocorrelation tests, and chronological case-count model
+comparisons.</p>
+<p>The Maharashtra ADD analysis did not detect a statistically significant
+directional shift between the first two comparison periods or significant
+global spatial autocorrelation in the selected district summaries.
+Reporting coverage was too uneven to support a meaningful statewide
+comparison involving 2019–2022 under the chosen observation threshold.</p>
+<p>In predictive experiments, climate features consistently reduced RMSE
+relative to a district-and-month Random Forest model. However, performance
+relative to the training-median baseline was mixed across MAE and RMSE.
+Because the climate features were contemporaneous with the target dates,
+the results remain retrospective rather than a validated operational
+forecast.</p>
+<p>The central contribution is an integrated and reproducible analytical
+workflow that makes spatial patterns and reporting limitations visible
+while establishing a clear foundation for more rigorous spatio-temporal
+forecasting research.</p>
+<hr />
+<h2 id="appendix-a-reproducibility-and-supporting-outputs">Appendix A. Reproducibility and Supporting Outputs</h2>
+<p>Key analysis outputs include:</p>
+<ul>
+<li><code>research_outputs/mh_add_spatiotemporal_findings.md</code></li>
+<li><code>research_outputs/mh_add_spatiotemporal_maps.png</code></li>
+<li><code>research_outputs/mh_add_spatiotemporal_summary.csv</code></li>
+<li><code>research_outputs/mh_add_period_change_uncertainty.csv</code></li>
+<li><code>research_outputs/mh_add_reporting_aware_timeline.png</code></li>
+<li><code>research_outputs/mh_add_reporting_aware_monthly.csv</code></li>
+<li><code>research_outputs/mh_add_moran_summary_robustness.csv</code></li>
+<li><code>research_outputs/mh_add_fair_model_comparison.csv</code></li>
+<li><code>research_outputs/rolling_origin_mh_add_fair_results.csv</code></li>
+<li><code>research_outputs/idsp_validation.csv</code></li>
+</ul>
+<p>Exact commands, software versions, dependency versions, and dataset
+definitions should be recorded before final submission. All reported
+numbers should be regenerated from the final scripts and checked against
+the saved outputs.</p>
+<h2 id="appendix-b-figures-to-include-in-the-final-btp">Appendix B. Figures to Include in the Final BTP</h2>
+<ol>
+<li>System architecture diagram: frontend, data pipeline, API, and model.</li>
+<li>Screenshot of the interactive GIS application.</li>
+<li>Maharashtra district median maps for the three study periods.</li>
+<li>Monthly reporting-aware timeline.</li>
+<li>Global and local spatial-autocorrelation map.</li>
+<li>Chronological model comparison figure showing MAE and RMSE.</li>
+<li>Example of a forecast expansion overlay, explicitly labelled as an
+   exploratory model output rather than a validated prediction.</li>
+</ol>
+<hr />
+<h2 id="11-key-research-figures">11. Key Research Figures</h2>
+<h3 id="111-district-level-spatio-temporal-comparison">11.1 District-level spatio-temporal comparison</h3>
+<p><img alt="Maharashtra ADD district median cases across study periods" src="mh_add_spatiotemporal_maps.png" /></p>
+<p><strong>Figure 1.</strong> District-level median recorded ADD cases across three study
+periods. Districts without observations are not assigned zero. Differences
+should be interpreted in light of unequal reporting coverage.</p>
+<h3 id="112-monthly-timeline-and-reporting-coverage">11.2 Monthly timeline and reporting coverage</h3>
+<p><img alt="Maharashtra ADD reporting-aware monthly timeline" src="mh_add_reporting_aware_timeline.png" /></p>
+<p><strong>Figure 2.</strong> Monthly recorded observations, reporting districts, and median
+recorded cases. Sparse months are flagged; missing months are not treated as
+zero incidence.</p>
+<h3 id="113-local-spatial-autocorrelation">11.3 Local spatial autocorrelation</h3>
+<p><img alt="Local spatial association map for Maharashtra ADD" src="mh_add_lisa_map.png" /></p>
+<p><strong>Figure 3.</strong> Local spatial association classifications for district-level
+median cases. Global Moran's I was not statistically significant
+(I = -0.0050, permutation p = 0.3551).</p>
+<h3 id="114-chronological-model-comparison">11.4 Chronological model comparison</h3>
+<p><img alt="Chronological evaluation of Maharashtra ADD case-count models" src="mh_add_fair_model_comparison.png" /></p>
+<p><strong>Figure 4.</strong> MAE and RMSE across three chronological cutoffs. Lower values
+indicate lower error. Climate measurements are contemporaneous with target
+dates, so the evaluation does not establish future operational forecasting
+performance.</p>
+</body>
+</html>

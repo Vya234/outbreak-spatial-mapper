@@ -1,0 +1,14 @@
+state,district,disease,date,cases,bulletin_week,reporting_date,source,page,dataset_matches,dataset_weeks,status
+Maharashtra,Parbhani,Acute Diarrheal Disease,2020-10-05,66,53,2020-12-31,week53_2020.pdf,4.0,1,53rd week,MATCH
+Maharashtra,Kolhapur,Acute Diarrheal Disease,2020-12-07,72,52,,week52_2020.pdf,4.0,1,52nd week,MATCH
+Maharashtra,Satara,Acute Diarrheal Disease,2020-12-07,116,52,,week52_2020.pdf,4.0,1,52nd week,MATCH
+West Bengal,South 24 Parganas,Acute Diarrheal Disease,2022-02-23,21,9,2022-02-23,week9_2022.pdf,5.0,1,9th week,MATCH
+West Bengal,North 24 Parganas,Acute Diarrheal Disease,2022-03-05,359,9,2022-03-06,week9_2022.pdf,6.0,1,9th week,MATCH
+West Bengal,North 24 Parganas,Acute Diarrheal Disease,2022-03-05,556,10,2022-03-06,week10_2022.pdf (WB/NCP/2022/10/069),,1,10th week,MATCH
+West Bengal,South 24 Parganas,Acute Diarrheal Disease,2022-03-26,35,12,2022-03-26,week12_2022.pdf (WB/SPG/2022/12/103),,1,12th week,MATCH
+Maharashtra,Satara,Acute Diarrheal Disease,2021-03-21,80,12,2021-03-24,week12_2021.pdf (MH/STA/2021/12/0138),4.0,1,12th week,MATCH
+West Bengal,South 24 Parganas,Acute Diarrheal Disease,2021-03-22,32,12,2021-03-25,week12_2021.pdf (WB/SPG/2021/12/0145),5.0,1,12th week,MATCH
+West Bengal,South 24 Parganas,Acute Diarrheal Disease,2021-03-25,57,12,2021-03-31,week12_2021.pdf (WB/SPG/2021/12/0143),5.0,1,12th week,MATCH
+West Bengal,North 24 Parganas,Acute Diarrheal Disease,2021-03-19,93,12,2021-03-20,week12_2021.pdf (WB/SPG/2021/12/0146),5.0,1,12th week,MATCH
+West Bengal,Puruliya,Acute Diarrheal Disease,2021-03-16,255,11,2021-03-17,week11_2021.pdf (WB/PRL/2021/11/0133),4.0,1,11th week,MATCH
+West Bengal,South 24 Parganas,Acute Diarrheal Disease,2021-03-09,122,11,,week11_2021.pdf (WB/SPG/2021/11/0135),5.0,1,11th week,MATCH
