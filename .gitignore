@@ -15,3 +15,9 @@ venv/
 .vscode/
 .idea/
 .DS_Store
+data_raw/
+research_data/
+research_outputs/idsp_text/
+research_outputs/idsp_validation_backup.csv
+README_backup.md
+index.html.backup-before-historical

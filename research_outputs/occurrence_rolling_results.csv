@@ -1,0 +1,41 @@
+disease,test_year,model,n_test,positives,base_rate,pr_auc,roc_auc,brier,recall_at_k,precision_at_k
+Acute Diarrhoeal Disease,2016,prevalence,9540,477,0.05,0.05,0.5,0.0476,0.052,0.104
+Acute Diarrhoeal Disease,2016,persistence (own 12-month count),9540,477,0.05,0.134,0.7049,,0.144,0.267
+Acute Diarrhoeal Disease,2016,GBM season+state,9540,477,0.05,0.1241,0.7299,0.0459,0.061,0.138
+Acute Diarrhoeal Disease,2016,GBM +own history,9540,477,0.05,0.2102,0.7885,0.0435,0.15,0.258
+Acute Diarrhoeal Disease,2016,GBM +neighbours,9540,477,0.05,0.2173,0.789,0.0433,0.142,0.258
+Acute Diarrhoeal Disease,2017,prevalence,9540,273,0.0286,0.0286,0.5,0.0279,0.032,0.033
+Acute Diarrhoeal Disease,2017,persistence (own 12-month count),9540,273,0.0286,0.0791,0.7198,,0.127,0.142
+Acute Diarrhoeal Disease,2017,GBM season+state,9540,273,0.0286,0.0717,0.66,0.0277,0.062,0.083
+Acute Diarrhoeal Disease,2017,GBM +own history,9540,273,0.0286,0.1269,0.7845,0.0267,0.166,0.167
+Acute Diarrhoeal Disease,2017,GBM +neighbours,9540,273,0.0286,0.1226,0.7842,0.0267,0.165,0.167
+Acute Diarrhoeal Disease,2018,prevalence,9540,294,0.0308,0.0308,0.5,0.0299,0.056,0.05
+Acute Diarrhoeal Disease,2018,persistence (own 12-month count),9540,294,0.0308,0.0651,0.6579,,0.094,0.117
+Acute Diarrhoeal Disease,2018,GBM season+state,9540,294,0.0308,0.0629,0.6559,0.0296,0.042,0.058
+Acute Diarrhoeal Disease,2018,GBM +own history,9540,294,0.0308,0.0932,0.7323,0.029,0.117,0.133
+Acute Diarrhoeal Disease,2018,GBM +neighbours,9540,294,0.0308,0.094,0.733,0.029,0.112,0.125
+Acute Diarrhoeal Disease,2019,prevalence,9540,300,0.0314,0.0314,0.5,0.0305,0.053,0.058
+Acute Diarrhoeal Disease,2019,persistence (own 12-month count),9540,300,0.0314,0.0626,0.6385,,0.114,0.133
+Acute Diarrhoeal Disease,2019,GBM season+state,9540,300,0.0314,0.0491,0.6382,0.0304,0.039,0.046
+Acute Diarrhoeal Disease,2019,GBM +own history,9540,300,0.0314,0.0876,0.7147,0.0297,0.098,0.117
+Acute Diarrhoeal Disease,2019,GBM +neighbours,9540,300,0.0314,0.0895,0.7175,0.0297,0.101,0.125
+Dengue,2016,prevalence,9540,143,0.015,0.015,0.5,0.0148,0.01,0.008
+Dengue,2016,persistence (own 12-month count),9540,143,0.015,0.0696,0.6723,,0.205,0.108
+Dengue,2016,GBM season+state,9540,143,0.015,0.036,0.6821,0.0147,0.061,0.046
+Dengue,2016,GBM +own history,9540,143,0.015,0.0809,0.7584,0.0145,0.215,0.121
+Dengue,2016,GBM +neighbours,9540,143,0.015,0.0908,0.7668,0.0145,0.215,0.121
+Dengue,2017,prevalence,9540,134,0.014,0.014,0.5,0.0139,0.014,0.008
+Dengue,2017,persistence (own 12-month count),9540,134,0.014,0.0795,0.7435,,0.176,0.121
+Dengue,2017,GBM season+state,9540,134,0.014,0.0633,0.7948,0.0135,0.271,0.108
+Dengue,2017,GBM +own history,9540,134,0.014,0.1845,0.8624,0.0126,0.238,0.146
+Dengue,2017,GBM +neighbours,9540,134,0.014,0.1798,0.863,0.0126,0.273,0.167
+Dengue,2018,prevalence,9540,97,0.0102,0.0102,0.5,0.0101,0.008,0.004
+Dengue,2018,persistence (own 12-month count),9540,97,0.0102,0.0472,0.7155,,0.18,0.083
+Dengue,2018,GBM season+state,9540,97,0.0102,0.0464,0.7382,0.0099,0.212,0.062
+Dengue,2018,GBM +own history,9540,97,0.0102,0.1127,0.8169,0.0096,0.302,0.117
+Dengue,2018,GBM +neighbours,9540,97,0.0102,0.1072,0.8199,0.0096,0.259,0.104
+Dengue,2019,prevalence,9540,152,0.0159,0.0159,0.5,0.0157,0.01,0.008
+Dengue,2019,persistence (own 12-month count),9540,152,0.0159,0.0642,0.6891,,0.157,0.129
+Dengue,2019,GBM season+state,9540,152,0.0159,0.0796,0.7817,0.0157,0.141,0.083
+Dengue,2019,GBM +own history,9540,152,0.0159,0.1268,0.84,0.0148,0.2,0.133
+Dengue,2019,GBM +neighbours,9540,152,0.0159,0.1222,0.837,0.0148,0.221,0.138

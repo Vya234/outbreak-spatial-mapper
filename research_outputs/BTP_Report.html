@@ -189,7 +189,7 @@ as observed epidemiological surveillance data.</p>
 endpoint for frontend requests.</p>
 <p>The implemented forecasting components include:</p>
 <ul>
-<li>Polynomial trend extrapolation for spatial drift.</li>
+<li>A fixed-growth radius heuristic (5% per forecast day) scaled by a clamped &beta;/&gamma; multiplier; no regression-based spatial drift model is implemented.</li>
 <li>A Susceptible-Infected-Recovered (SIR) compartmental model.</li>
 <li>Numerical parameter fitting against cumulative case curves.</li>
 <li>A heuristic that combines projected spatial radius with the fitted

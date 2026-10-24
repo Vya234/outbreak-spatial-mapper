@@ -53,7 +53,7 @@ The objective is to build a transparent and reproducible foundation for studying
 - Investigate temporal coverage, reporting gaps, and potential data-quality issues.
 - Examine whether neighboring districts exhibit statistically detectable spatial clustering.
 - Compare simple baselines with machine-learning models using chronological evaluation.
-- Explore a hybrid epidemiological and spatial-drift forecasting approach.
+- Explore a fixed-growth radius heuristic combined with an SIR-based epidemiological component (unvalidated).
 - Document the assumptions and limitations necessary for responsible interpretation.
 
 ## Key Features
@@ -69,7 +69,7 @@ The objective is to build a transparent and reproducible foundation for studying
 | District-level analysis | Compare recorded case counts across districts and predefined periods. |
 | Spatial statistics | Evaluate global spatial autocorrelation and local spatial patterns. |
 | Model benchmarking | Compare training-median and Random Forest baselines under chronological splits. |
-| Exploratory forecasting | Combine polynomial spatial-drift extrapolation with an SIR-based epidemiological component. |
+| Exploratory forecasting | Combine a fixed-growth radius heuristic with an SIR-based epidemiological component (unvalidated). |
 | Research documentation | Maintain reproducible analysis scripts, tabular results, visualizations, and a BTP research report. |
 
 ## System Architecture
@@ -83,7 +83,7 @@ flowchart TD
     C --> D[Temporal and Spatial Features]
     D --> E[Statistical Analysis]
     D --> F[Exploratory Case-Count Models]
-    D --> G[Spatial-Drift and SIR Forecasting]
+    D --> G[Radius Heuristic and SIR Forecasting]
 
     H[Interactive GIS Frontend] --> I[Leaflet Map]
     I --> J[Convex Hull and Geographic Analytics]
@@ -267,9 +267,9 @@ A Susceptible–Infected–Recovered (SIR) compartmental model represents the si
 
 The implementation fits model parameters using least-squares optimization against the available observations. The validity of the fitted parameters depends on the quality, timing, and interpretation of the input case series.
 
-### Spatial-drift component
+### Radius-expansion heuristic
 
-Polynomial trend regression is used to extrapolate the movement of outbreak centroids from historical geographic observations.
+The prediction endpoint (`api.py`) uses the mean of the submitted coordinates as the centroid, grows the spread radius by a fixed 5% per forecast day (minimum 1 km), scales it by a multiplier derived from the fitted β/γ (clamped to 0.5–3.0) and reports a fixed 15% radius band. These are untested heuristics; no regression-based drift model is implemented.
 
 The data engineering pipeline derives daily centroid and spread-radius features from available coordinates, using great-circle distance calculations for spatial summaries.
 
@@ -434,8 +434,9 @@ The following limitations are important to the current state of the project:
 6. **Statistical inference:** Non-significant results do not establish the absence of spatial or temporal structure. Local spatial analyses also require careful treatment of multiple testing.
 7. **Retrospective model evaluation:** Climate values measured on target dates may not be available at prediction time. Current case-count results do not demonstrate operational forecast performance.
 8. **Geographic forecast validation:** The seven-day expansion overlay has not been independently validated against held-out future outbreak boundaries.
-9. **Model assumptions:** Polynomial spatial drift and SIR dynamics simplify complex transmission and geographic processes.
-10. **Not a clinical or public-health decision system:** The application is an exploratory research tool and should not be used as the sole basis for public-health interventions.
+9. **Model assumptions:** The radius heuristic (fixed 5% per-day growth, clamped β/γ multiplier, fixed 15% band) and SIR dynamics simplify complex transmission and geographic processes and have not been validated.
+10. **SIR parameter estimation limitations:** The L-BFGS-B optimizer attempts to estimate N, beta, and gamma by minimizing mean squared error between modeled and observed cumulative case counts. In a diagnostic using the first 30 daily aggregate values from the dengue dataset, initial population values of 5,000, 50,000, and 100,000 produced optimized N values of 16,824.93, 51,663.20, and 95,647.35, respectively. The estimates were sensitive to initialization. Successful optimizer termination does not establish parameter accuracy or identifiability; the estimates remain exploratory and require further diagnostics and independent validation.
+11. **Not a clinical or public-health decision system:** The application is an exploratory research tool and should not be used as the sole basis for public-health interventions.
 
 ## Future Work
 

@@ -137,7 +137,7 @@ endpoint for frontend requests.
 
 The implemented forecasting components include:
 
-- Polynomial trend extrapolation for spatial drift.
+- A fixed-growth radius heuristic (5% per forecast day) scaled by a clamped β/γ multiplier; no regression-based spatial drift model is implemented.
 - A Susceptible-Infected-Recovered (SIR) compartmental model.
 - Numerical parameter fitting against cumulative case curves.
 - A heuristic that combines projected spatial radius with the fitted
@@ -149,10 +149,12 @@ differential equations to represent a simplified transmission process.
 Its parameters and outputs depend on the validity of the input time series,
 initial conditions, and population assumptions.
 
-The current spatial projection is a heuristic combination of trend
-extrapolation and the fitted SIR component. It should not be described as a
-validated estimate of future geographic spread without independent spatial
-forecast evaluation.
+The current spatial projection uses a fixed-growth radius heuristic,
+scaled by a multiplier derived from the fitted beta/gamma ratio and bounded
+to a predefined range. It does not implement regression-based spatial drift.
+The projected expansion zone is an exploratory visualization, not a validated
+estimate of future geographic spread. Independent spatial forecast evaluation
+is required before making predictive performance claims.
 
 ### 2.4 Deployment
 
@@ -518,6 +520,7 @@ validation is needed.
     prediction intervals.
 11. **Generalizability:** Results for Maharashtra ADD cannot automatically
     be generalized to other diseases or states.
+12. **SIR parameter estimation limitations:** The L-BFGS-B optimizer attempts to estimate the population parameter N, transmission rate beta, and recovery rate gamma by minimizing the mean squared error between model-predicted and observed cumulative case counts. In synthetic diagnostic runs, N remained at its initial value in five of six runs and changed by only 0.14 in the sixth. In a separate diagnostic using the first 30 daily aggregate values from the dengue dataset, three initial population values (5,000, 50,000, and 100,000) produced optimized N values of 16,824.93, 51,663.20, and 95,647.35, respectively. The fitted parameters therefore showed sensitivity to initialization in these tests. Successful optimizer termination does not establish parameter accuracy or identifiability. The estimates should be treated as exploratory until evaluated with further diagnostics and suitable independent outbreak data.
 
 ---
 
