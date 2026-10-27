@@ -1,0 +1,13 @@
+disease,test_period,cohort,districts,district_month_rows,positives,base_rate,test_months,min_pretest_record_months
+Acute Diarrhoeal Disease,2020,prehistory: >=1 any-record month,762,9144,64,0.00699912510936133,12,1
+Acute Diarrhoeal Disease,2020,prehistory: >=6 any-record months,344,4128,54,0.01308139534883721,12,6
+Acute Diarrhoeal Disease,2021,prehistory: >=1 any-record month,772,9264,137,0.014788428324697754,12,1
+Acute Diarrhoeal Disease,2021,prehistory: >=6 any-record months,347,4164,105,0.02521613832853026,12,6
+Acute Diarrhoeal Disease,2022_H1,prehistory: >=1 any-record month,787,4722,111,0.023506988564167726,6,1
+Acute Diarrhoeal Disease,2022_H1,prehistory: >=6 any-record months,362,2172,81,0.03729281767955801,6,6
+Dengue,2020,prehistory: >=1 any-record month,762,9144,34,0.0037182852143482063,12,1
+Dengue,2020,prehistory: >=6 any-record months,344,4128,31,0.0075096899224806205,12,6
+Dengue,2021,prehistory: >=1 any-record month,772,9264,79,0.008527633851468049,12,1
+Dengue,2021,prehistory: >=6 any-record months,347,4164,65,0.015609990393852064,12,6
+Dengue,2022_H1,prehistory: >=1 any-record month,787,4722,21,0.0044472681067344345,6,1
+Dengue,2022_H1,prehistory: >=6 any-record months,362,2172,20,0.009208103130755065,6,6

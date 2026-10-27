@@ -544,6 +544,120 @@ accuracy of the frontend's predicted expansion boundary.
 
 ---
 
+
+### 6.7 Seven-step forecast benchmark on the constructed timeline
+
+**Objective.** A separate experiment compared simple forecasting baselines
+for the `newly_logged` series derived from the processed Maharashtra dengue
+records. This experiment evaluates numerical predictions over seven
+consecutive observations on the constructed timeline. It does not evaluate
+seven calendar days of confirmed dengue incidence.
+
+**Evaluation design.** The rolling-origin procedure begins after 120
+observations and advances in seven-observation blocks. Each method produces
+a constant prediction across the next block. The compared methods are the
+expanding training median, last-observation persistence, recent seven-
+observation median, recent seven-observation mean, and a 50--50 median
+ensemble. The ensemble results are recorded separately in
+`research_outputs/7day_ensemble_summary.csv`.
+
+**Results.** Table 6.8 reports the pooled metrics available for the
+five methods.
+
+| Method | Test blocks | Test observations | MAE | RMSE |
+|---|---:|---:|---:|---:|
+| Expanding training median | 39 | 272 | 12.612 | 15.275 |
+| Last-observation persistence | 39 | 272 | 15.375 | 19.905 |
+| Recent seven-observation median | 39 | 272 | 12.412 | 16.045 |
+| Recent seven-observation mean | 39 | 272 | 12.580 | 15.268 |
+| 50--50 median ensemble | 39 | 272 | 12.093 | 15.131 |
+
+*Table 6.8. Pooled rolling-origin performance on the constructed observation
+timeline. Lower MAE and RMSE indicate lower numerical prediction error.
+Sources: `7day_forecast_summary.csv` and `7day_ensemble_summary.csv`.*
+
+The 50--50 median ensemble achieved the lowest pooled MAE and RMSE among
+the methods listed. Persistence performed worst on both metrics. The
+differences between the ensemble and the other median-based methods were
+modest, so the result should be interpreted as a comparative benchmark
+rather than evidence of a generally superior forecasting system.
+
+**Interpretation and limitations.** The timeline's daily index represents
+the order of constructed observations, not elapsed calendar time. The
+`newly_logged` target counts locations first logged on each constructed
+timeline day; it is not a verified daily incidence series. Therefore, the
+experiment does not establish the accuracy of a seven-calendar-day dengue
+forecast. The results are useful for comparing baseline methods under this
+specific data construction, but their epidemiological meaning is limited.
+The experiment also does not validate the geographic expansion overlay
+displayed by the frontend.
+
+### 6.8 SIR parameter fitting and holdout evaluation
+
+**Model.** The Susceptible--Infectious--Recovered (SIR) model represents
+the population using susceptible (\(S\)), infectious (\(I\)), and recovered
+(\(R\)) compartments. Its differential equations are
+
+\[
+\frac{dS}{dt}=-\beta\frac{SI}{N}, \qquad
+\frac{dI}{dt}=\beta\frac{SI}{N}-\gamma I, \qquad
+\frac{dR}{dt}=\gamma I.
+\]
+
+Here, \(N\) denotes the assumed population size, while \(\beta\) and
+\(\gamma\) are the transmission and recovery parameters. The implementation
+numerically integrates the equations and estimates \(N\), \(\beta\), and
+\(\gamma\) by minimizing mean squared error between observed cumulative
+counts and modelled \(I+R\). Parameter optimization uses L-BFGS-B with
+bounded parameter values.
+
+**Holdout design.** The SIR validation experiment uses the processed
+Maharashtra dengue series and a chronological split: the first 70% of
+observations are used for fitting, and the remaining 30% form the holdout
+set. The comparison baseline predicts the median daily logged count from
+the training period for every holdout observation. SIR parameters are fitted
+using training observations only.
+
+**Results.**
+
+| Method | MAE | RMSE |
+|---|---:|---:|
+| Training-median baseline | 12.958 | 15.034 |
+| SIR model | 17.161 | 22.637 |
+
+*Table 6.9. Chronological holdout results from `sir_holdout_validation.csv`.
+Lower values indicate lower prediction error.*
+
+The SIR model performed worse than the training-median baseline on both
+metrics. Its holdout predictions were effectively zero for 117 of the 118
+observations, indicating that the fitted trajectory did not reproduce the
+scale of the observed logged-count series during evaluation.
+
+**Parameter sensitivity.** Additional diagnostics found that estimates
+depended on the initial population supplied to the optimizer. For the first
+30 aggregate observations in the dengue diagnostic, initial population
+values of 5,000, 50,000, and 100,000 produced optimized population estimates
+of 16,824.93, 51,663.20, and 95,647.35, respectively. Other synthetic tests
+also showed that different initializations could lead to materially
+different parameter estimates or estimates at parameter bounds. These
+results raise concerns about parameter identifiability and the stability
+of the fit for the available series.
+
+**Interpretation.** The SIR experiment did not demonstrate a predictive
+advantage over a simple baseline. Moreover, the observed values represent
+logged locations on a constructed timeline rather than validated daily
+infection counts. Consequently, the fitted parameters should not be
+interpreted as reliable epidemiological estimates. Successful numerical
+optimization alone does not establish that the fitted parameters are
+identifiable, epidemiologically meaningful, or predictive.
+
+The experiment is retained as a negative result because it documents the
+limits of applying a compartmental epidemic model to the available data.
+Further work would require a defensible incidence series, explicit
+assumptions about population and initial conditions, sensitivity analysis,
+and independent validation before epidemiological conclusions could be
+drawn.
+
 ## 7. Discussion
 
 The project integrates geospatial software engineering with exploratory

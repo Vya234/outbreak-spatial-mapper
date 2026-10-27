@@ -9,8 +9,21 @@ Step 2 will consume.
 Key design choice: "active cases on day N" is treated as CUMULATIVE
 (every case logged on or before day N), matching how the Leaflet
 frontend's time slider already works (case.day <= currentDayLimit).
-Pass cumulative=False if you'd rather look at only the cases newly
-reported on each day.
+
+Pass cumulative=False to calculate features for locations logged
+on each individual day.
+
+Output columns:
+- day
+- case_count
+- centroid_lat
+- centroid_lng
+- spread_radius_km
+- newly_logged
+
+Important:
+"newly_logged" counts newly logged locations, not necessarily new
+epidemiological infections.
 """
 
 import math
@@ -28,14 +41,25 @@ def load_cases(csv_path: str) -> pd.DataFrame:
     """Load the exported case CSV and do basic validation/cleanup."""
     df = pd.read_csv(csv_path)
 
-    expected_cols = {"Point_ID", "Latitude", "Longitude", "Timeline_Day"}
+    expected_cols = {
+        "Point_ID",
+        "Latitude",
+        "Longitude",
+        "Timeline_Day",
+    }
+
     missing = expected_cols - set(df.columns)
+
     if missing:
         raise ValueError(f"CSV is missing expected columns: {missing}")
 
-    df = df.dropna(subset=["Latitude", "Longitude", "Timeline_Day"]).copy()
+    df = df.dropna(
+        subset=["Latitude", "Longitude", "Timeline_Day"]
+    ).copy()
+
     df["Timeline_Day"] = df["Timeline_Day"].astype(int)
     df = df.sort_values("Timeline_Day").reset_index(drop=True)
+
     return df
 
 
@@ -48,27 +72,55 @@ EARTH_RADIUS_KM = 6371.0088
 
 def haversine_km(lat1, lon1, lat2, lon2) -> float:
     """Great-circle distance between two lat/lng points, in km."""
-    lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
+    lat1, lon1, lat2, lon2 = map(
+        math.radians,
+        [lat1, lon1, lat2, lon2],
+    )
+
     dlat = lat2 - lat1
     dlon = lon2 - lon1
-    a = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+
+    a = (
+        math.sin(dlat / 2) ** 2
+        + math.cos(lat1)
+        * math.cos(lat2)
+        * math.sin(dlon / 2) ** 2
+    )
+
+    # Protect against small floating-point rounding errors.
+    a = min(1.0, max(0.0, a))
+
     return 2 * EARTH_RADIUS_KM * math.asin(math.sqrt(a))
 
 
 def centroid(points: pd.DataFrame) -> tuple[float, float]:
-    """Simple mean-lat/mean-lng centroid (fine at neighbourhood scale)."""
-    return points["Latitude"].mean(), points["Longitude"].mean()
+    """Simple mean-latitude/mean-longitude centroid."""
+    return (
+        float(points["Latitude"].mean()),
+        float(points["Longitude"].mean()),
+    )
 
 
-def spread_radius_km(points: pd.DataFrame, centroid_lat: float, centroid_lng: float) -> float:
-    """Max distance from centroid to any case = radius of the outbreak."""
+def spread_radius_km(
+    points: pd.DataFrame,
+    centroid_lat: float,
+    centroid_lng: float,
+) -> float:
+    """Maximum great-circle distance from the centroid, in km."""
     if len(points) == 0:
         return 0.0
-    dists = points.apply(
-        lambda r: haversine_km(centroid_lat, centroid_lng, r["Latitude"], r["Longitude"]),
+
+    distances = points.apply(
+        lambda row: haversine_km(
+            centroid_lat,
+            centroid_lng,
+            row["Latitude"],
+            row["Longitude"],
+        ),
         axis=1,
     )
-    return float(dists.max())
+
+    return float(distances.max())
 
 
 # ---------------------------------------------------------------------
@@ -84,35 +136,133 @@ class DailyFeatures:
     spread_radius_km: float
 
 
-def compute_daily_features(df: pd.DataFrame, cumulative: bool = True) -> pd.DataFrame:
+def compute_daily_features(
+    df: pd.DataFrame,
+    cumulative: bool = True,
+) -> pd.DataFrame:
     """
-    Build one row per day in [min_day, max_day] with:
-      day, case_count, centroid_lat, centroid_lng, spread_radius_km
+    Build one row per day in [min_day, max_day].
 
-    cumulative=True  -> "active cases up to and including this day"
-                         (matches the app's time slider behaviour)
-    cumulative=False -> only cases newly logged on that exact day
+    cumulative=True:
+        case_count is the total number of locations logged on or
+        before that day.
+
+    cumulative=False:
+        case_count is the number of locations logged on that day.
+
+    newly_logged:
+        Number of locations first logged on each day. This is
+        calculated explicitly in both modes.
+
+    Days with no new locations have newly_logged=0. Centroids are
+    forward-filled on empty days where a previous centroid exists.
     """
-    min_day, max_day = int(df["Timeline_Day"].min()), int(df["Timeline_Day"].max())
+    output_columns = [
+        "day",
+        "case_count",
+        "centroid_lat",
+        "centroid_lng",
+        "spread_radius_km",
+        "newly_logged",
+    ]
+
+    if df.empty:
+        return pd.DataFrame(columns=output_columns)
+
+    required_cols = {
+        "Latitude",
+        "Longitude",
+        "Timeline_Day",
+    }
+
+    missing = required_cols - set(df.columns)
+
+    if missing:
+        raise ValueError(
+            f"DataFrame is missing required columns: {missing}"
+        )
+
+    working_df = df.dropna(
+        subset=["Latitude", "Longitude", "Timeline_Day"]
+    ).copy()
+
+    if working_df.empty:
+        return pd.DataFrame(columns=output_columns)
+
+    working_df["Timeline_Day"] = (
+        working_df["Timeline_Day"].astype(int)
+    )
+
+    min_day = int(working_df["Timeline_Day"].min())
+    max_day = int(working_df["Timeline_Day"].max())
+
     rows: list[DailyFeatures] = []
 
+    # Process EVERY day in the timeline.
     for day in range(min_day, max_day + 1):
-        subset = df[df["Timeline_Day"] <= day] if cumulative else df[df["Timeline_Day"] == day]
+        if cumulative:
+            subset = working_df[
+                working_df["Timeline_Day"] <= day
+            ]
+        else:
+            subset = working_df[
+                working_df["Timeline_Day"] == day
+            ]
 
-        if len(subset) == 0:
-            rows.append(DailyFeatures(day, 0, np.nan, np.nan, 0.0))
+        if subset.empty:
+            rows.append(
+                DailyFeatures(
+                    day=day,
+                    case_count=0,
+                    centroid_lat=np.nan,
+                    centroid_lng=np.nan,
+                    spread_radius_km=0.0,
+                )
+            )
             continue
 
-        c_lat, c_lng = centroid(subset)
-        radius = spread_radius_km(subset, c_lat, c_lng)
-        rows.append(DailyFeatures(day, len(subset), c_lat, c_lng, radius))
+        center_lat, center_lng = centroid(subset)
 
-    out = pd.DataFrame([r.__dict__ for r in rows])
+        radius = spread_radius_km(
+            subset,
+            center_lat,
+            center_lng,
+        )
 
-    # forward-fill centroid on any empty days (only relevant for
-    # cumulative=False, where a day might have zero new cases)
-    out[["centroid_lat", "centroid_lng"]] = out[["centroid_lat", "centroid_lng"]].ffill()
-    return out
+        rows.append(
+            DailyFeatures(
+                day=day,
+                case_count=len(subset),
+                centroid_lat=center_lat,
+                centroid_lng=center_lng,
+                spread_radius_km=radius,
+            )
+        )
+
+    # IMPORTANT: DataFrame creation and return are OUTSIDE the loop.
+    out = pd.DataFrame(
+        [row.__dict__ for row in rows]
+    )
+
+    # Explicitly calculate newly logged locations per day.
+    if cumulative:
+        out["newly_logged"] = (
+            out["case_count"]
+            .diff()
+            .fillna(out["case_count"].iloc[0])
+            .astype(int)
+        )
+    else:
+        out["newly_logged"] = (
+            out["case_count"].astype(int)
+        )
+
+    # Keep centroids continuous through days without new locations.
+    out[["centroid_lat", "centroid_lng"]] = (
+        out[["centroid_lat", "centroid_lng"]].ffill()
+    )
+
+    return out[output_columns]
 
 
 # ---------------------------------------------------------------------
@@ -123,29 +273,38 @@ def generate_sequences(
     daily_features: pd.DataFrame,
     seq_len: int = 7,
     horizon: int = 7,
-    feature_cols: tuple[str, ...] = ("centroid_lat", "centroid_lng", "spread_radius_km", "case_count"),
+    feature_cols: tuple[str, ...] = (
+        "centroid_lat",
+        "centroid_lng",
+        "spread_radius_km",
+        "case_count",
+    ),
 ):
     """
-    Slide a window of `seq_len` days across the time-series to build
-    (X, y) pairs: X = seq_len days of features, y = the same features
-    `horizon` days later.
+    Slide a window of `seq_len` days across the time series.
 
-    With only ~14 days of data from a single synthetic outbreak this
-    will yield very few (or zero) windows -- that's expected, and is
-    exactly why Step 2 uses a simple regression fit on the trend
-    rather than a data-hungry model like an LSTM.
+    X contains seq_len consecutive days of features.
+    y contains the feature values horizon days after the input window.
+
+    With only ~14 days of data from a single synthetic outbreak,
+    this produces very few windows. That is why Step 2 uses a simple
+    trend fit rather than a data-hungry model like an LSTM.
     """
     values = daily_features[list(feature_cols)].to_numpy()
     n = len(values)
 
     X, y = [], []
-    for start in range(0, n - seq_len - horizon + 1):
-        X.append(values[start : start + seq_len])
-        y.append(values[start + seq_len + horizon - 1])
 
-    X = np.array(X)
-    y = np.array(y)
-    return X, y
+    for start in range(0, n - seq_len - horizon + 1):
+        X.append(
+            values[start:start + seq_len]
+        )
+
+        y.append(
+            values[start + seq_len + horizon - 1]
+        )
+
+    return np.array(X), np.array(y)
 
 
 # ---------------------------------------------------------------------
@@ -153,8 +312,7 @@ def generate_sequences(
 # ---------------------------------------------------------------------
 
 if __name__ == "__main__":
-    # Synthetic export matching the app's default seed cases, so the
-    # pipeline can be sanity-checked before you drop in a real export.
+    # Synthetic export matching the app's default seed cases.
     demo_rows = [
         (1, 22.3149, 87.3105, 1),
         (2, 22.3155, 87.3151, 3),
@@ -166,13 +324,39 @@ if __name__ == "__main__":
         (8, 22.3110, 87.3145, 13),
         (9, 22.3175, 87.3122, 14),
     ]
-    demo_df = pd.DataFrame(demo_rows, columns=["Point_ID", "Latitude", "Longitude", "Timeline_Day"])
-    demo_df.to_csv("/tmp/demo_export.csv", index=False)
+
+    demo_df = pd.DataFrame(
+        demo_rows,
+        columns=[
+            "Point_ID",
+            "Latitude",
+            "Longitude",
+            "Timeline_Day",
+        ],
+    )
+
+    demo_df.to_csv(
+        "/tmp/demo_export.csv",
+        index=False,
+    )
 
     cases = load_cases("/tmp/demo_export.csv")
-    daily = compute_daily_features(cases, cumulative=True)
+
+    daily = compute_daily_features(
+        cases,
+        cumulative=True,
+    )
+
     print("Daily features (cumulative):")
     print(daily.to_string(index=False))
 
-    X, y = generate_sequences(daily, seq_len=7, horizon=1)
-    print(f"\nSequence windows generated: {X.shape[0]} (shape X={X.shape}, y={y.shape})")
+    X, y = generate_sequences(
+        daily,
+        seq_len=7,
+        horizon=1,
+    )
+
+    print(
+        f"\nSequence windows generated: "
+        f"{X.shape[0]} (shape X={X.shape}, y={y.shape})"
+    )

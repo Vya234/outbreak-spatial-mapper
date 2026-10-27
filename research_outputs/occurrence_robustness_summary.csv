@@ -1,0 +1,7 @@
+disease,eligibility,districts,positives_per_year,base_rate,LOW_N,PR-AUC persistence (own 12-month count),PR-AUC GBM +own history,PR-AUC GBM +neighbours,GBM own history: lift over base rate,years GBM own > baseline (PR-AUC)
+Acute Diarrhoeal Disease,all districts,795-795,273-477,0.035,,0.085,0.129,0.131,3.7,4/4
+Acute Diarrhoeal Disease,>=6 recorded months (training),152-228,144-226,0.077,,0.127,0.18,0.18,2.4,4/4
+Acute Diarrhoeal Disease,>=12 recorded months (training),33-78,59-84,0.112,,0.167,0.231,0.227,2.1,4/4
+Dengue,all districts,795-795,97-152,0.014,,0.065,0.126,0.125,9.2,4/4
+Dengue,>=6 recorded months (training),26-48,26-49,0.083,LOW-N,0.125,0.246,0.245,2.9,4/4
+Dengue,>=12 recorded months (training),5-15,8-27,0.129,LOW-N,0.172,0.281,0.27,2.2,4/4

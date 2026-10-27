@@ -1,0 +1,13 @@
+cohort,disease,test_period,districts,states,district_month_rows,positive_rows,base_rate
+common: >=1 any-record month before 2020,Acute Diarrhoeal Disease,2020,762,36,9144,64,0.00699912510936133
+common: >=1 any-record month before 2020,Acute Diarrhoeal Disease,2021,762,36,9144,135,0.014763779527559055
+common: >=1 any-record month before 2020,Acute Diarrhoeal Disease,2022_H1,762,36,4572,106,0.023184601924759404
+common: >=1 any-record month before 2020,Dengue,2020,762,36,9144,34,0.0037182852143482063
+common: >=1 any-record month before 2020,Dengue,2021,762,36,9144,79,0.00863954505686789
+common: >=1 any-record month before 2020,Dengue,2022_H1,762,36,4572,21,0.004593175853018373
+common: >=6 any-record months before 2020,Acute Diarrhoeal Disease,2020,344,27,4128,54,0.01308139534883721
+common: >=6 any-record months before 2020,Acute Diarrhoeal Disease,2021,344,27,4128,105,0.025436046511627907
+common: >=6 any-record months before 2020,Acute Diarrhoeal Disease,2022_H1,344,27,2064,73,0.035368217054263566
+common: >=6 any-record months before 2020,Dengue,2020,344,27,4128,31,0.0075096899224806205
+common: >=6 any-record months before 2020,Dengue,2021,344,27,4128,65,0.015746124031007752
+common: >=6 any-record months before 2020,Dengue,2022_H1,344,27,2064,19,0.009205426356589148

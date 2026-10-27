@@ -1,0 +1,145 @@
+disease,test_year,eligibility,eligible_districts,positives,base_rate,model,pr_auc,roc_auc
+Acute Diarrhoeal Disease,2016,all districts,795,477,0.05,persistence (own 12-month count),0.134,0.7049
+Acute Diarrhoeal Disease,2016,all districts,795,477,0.05,Season only,0.0909,0.6858
+Acute Diarrhoeal Disease,2016,all districts,795,477,0.05,Season + st1,0.114,0.7152
+Acute Diarrhoeal Disease,2016,all districts,795,477,0.05,Season + state 3-month,0.1119,0.7123
+Acute Diarrhoeal Disease,2016,all districts,795,477,0.05,Season + both state features,0.1241,0.7299
+Acute Diarrhoeal Disease,2016,all districts,795,477,0.05,Season + state + own history,0.2102,0.7885
+Acute Diarrhoeal Disease,2016,>=6 recorded months (training),152,226,0.1239,persistence (own 12-month count),0.2061,0.6389
+Acute Diarrhoeal Disease,2016,>=6 recorded months (training),152,226,0.1239,Season only,0.2012,0.6755
+Acute Diarrhoeal Disease,2016,>=6 recorded months (training),152,226,0.1239,Season + st1,0.1943,0.6616
+Acute Diarrhoeal Disease,2016,>=6 recorded months (training),152,226,0.1239,Season + state 3-month,0.2095,0.6665
+Acute Diarrhoeal Disease,2016,>=6 recorded months (training),152,226,0.1239,Season + both state features,0.206,0.6703
+Acute Diarrhoeal Disease,2016,>=6 recorded months (training),152,226,0.1239,Season + state + own history,0.2908,0.7008
+Acute Diarrhoeal Disease,2016,>=12 recorded months (training),33,72,0.1818,persistence (own 12-month count),0.2891,0.6291
+Acute Diarrhoeal Disease,2016,>=12 recorded months (training),33,72,0.1818,Season only,0.2929,0.6754
+Acute Diarrhoeal Disease,2016,>=12 recorded months (training),33,72,0.1818,Season + st1,0.2992,0.6749
+Acute Diarrhoeal Disease,2016,>=12 recorded months (training),33,72,0.1818,Season + state 3-month,0.3316,0.6812
+Acute Diarrhoeal Disease,2016,>=12 recorded months (training),33,72,0.1818,Season + both state features,0.3119,0.682
+Acute Diarrhoeal Disease,2016,>=12 recorded months (training),33,72,0.1818,Season + state + own history,0.3973,0.7088
+Acute Diarrhoeal Disease,2017,all districts,795,273,0.0286,persistence (own 12-month count),0.0791,0.7198
+Acute Diarrhoeal Disease,2017,all districts,795,273,0.0286,Season only,0.0441,0.6425
+Acute Diarrhoeal Disease,2017,all districts,795,273,0.0286,Season + st1,0.057,0.6601
+Acute Diarrhoeal Disease,2017,all districts,795,273,0.0286,Season + state 3-month,0.0462,0.6575
+Acute Diarrhoeal Disease,2017,all districts,795,273,0.0286,Season + both state features,0.0717,0.66
+Acute Diarrhoeal Disease,2017,all districts,795,273,0.0286,Season + state + own history,0.1269,0.7845
+Acute Diarrhoeal Disease,2017,>=6 recorded months (training),191,144,0.0628,persistence (own 12-month count),0.1034,0.6421
+Acute Diarrhoeal Disease,2017,>=6 recorded months (training),191,144,0.0628,Season only,0.0918,0.6223
+Acute Diarrhoeal Disease,2017,>=6 recorded months (training),191,144,0.0628,Season + st1,0.0978,0.6158
+Acute Diarrhoeal Disease,2017,>=6 recorded months (training),191,144,0.0628,Season + state 3-month,0.0869,0.5905
+Acute Diarrhoeal Disease,2017,>=6 recorded months (training),191,144,0.0628,Season + both state features,0.1268,0.6001
+Acute Diarrhoeal Disease,2017,>=6 recorded months (training),191,144,0.0628,Season + state + own history,0.1639,0.7043
+Acute Diarrhoeal Disease,2017,>=12 recorded months (training),54,59,0.091,persistence (own 12-month count),0.1282,0.5844
+Acute Diarrhoeal Disease,2017,>=12 recorded months (training),54,59,0.091,Season only,0.1305,0.6189
+Acute Diarrhoeal Disease,2017,>=12 recorded months (training),54,59,0.091,Season + st1,0.1148,0.569
+Acute Diarrhoeal Disease,2017,>=12 recorded months (training),54,59,0.091,Season + state 3-month,0.108,0.5515
+Acute Diarrhoeal Disease,2017,>=12 recorded months (training),54,59,0.091,Season + both state features,0.1177,0.5456
+Acute Diarrhoeal Disease,2017,>=12 recorded months (training),54,59,0.091,Season + state + own history,0.1992,0.6319
+Acute Diarrhoeal Disease,2018,all districts,795,294,0.0308,persistence (own 12-month count),0.0651,0.6579
+Acute Diarrhoeal Disease,2018,all districts,795,294,0.0308,Season only,0.0455,0.6296
+Acute Diarrhoeal Disease,2018,all districts,795,294,0.0308,Season + st1,0.0585,0.6493
+Acute Diarrhoeal Disease,2018,all districts,795,294,0.0308,Season + state 3-month,0.0565,0.6523
+Acute Diarrhoeal Disease,2018,all districts,795,294,0.0308,Season + both state features,0.0629,0.6559
+Acute Diarrhoeal Disease,2018,all districts,795,294,0.0308,Season + state + own history,0.0932,0.7323
+Acute Diarrhoeal Disease,2018,>=6 recorded months (training),206,155,0.0627,persistence (own 12-month count),0.1008,0.6456
+Acute Diarrhoeal Disease,2018,>=6 recorded months (training),206,155,0.0627,Season only,0.0946,0.638
+Acute Diarrhoeal Disease,2018,>=6 recorded months (training),206,155,0.0627,Season + st1,0.1064,0.6384
+Acute Diarrhoeal Disease,2018,>=6 recorded months (training),206,155,0.0627,Season + state 3-month,0.1075,0.6287
+Acute Diarrhoeal Disease,2018,>=6 recorded months (training),206,155,0.0627,Season + both state features,0.1164,0.6364
+Acute Diarrhoeal Disease,2018,>=6 recorded months (training),206,155,0.0627,Season + state + own history,0.1405,0.7088
+Acute Diarrhoeal Disease,2018,>=12 recorded months (training),64,65,0.0846,persistence (own 12-month count),0.1368,0.682
+Acute Diarrhoeal Disease,2018,>=12 recorded months (training),64,65,0.0846,Season only,0.1213,0.6113
+Acute Diarrhoeal Disease,2018,>=12 recorded months (training),64,65,0.0846,Season + st1,0.1406,0.5992
+Acute Diarrhoeal Disease,2018,>=12 recorded months (training),64,65,0.0846,Season + state 3-month,0.1407,0.5875
+Acute Diarrhoeal Disease,2018,>=12 recorded months (training),64,65,0.0846,Season + both state features,0.1505,0.5931
+Acute Diarrhoeal Disease,2018,>=12 recorded months (training),64,65,0.0846,Season + state + own history,0.1802,0.7094
+Acute Diarrhoeal Disease,2019,all districts,795,300,0.0314,persistence (own 12-month count),0.0626,0.6385
+Acute Diarrhoeal Disease,2019,all districts,795,300,0.0314,Season only,0.0445,0.6184
+Acute Diarrhoeal Disease,2019,all districts,795,300,0.0314,Season + st1,0.0489,0.6331
+Acute Diarrhoeal Disease,2019,all districts,795,300,0.0314,Season + state 3-month,0.0457,0.6297
+Acute Diarrhoeal Disease,2019,all districts,795,300,0.0314,Season + both state features,0.0491,0.6382
+Acute Diarrhoeal Disease,2019,all districts,795,300,0.0314,Season + state + own history,0.0876,0.7147
+Acute Diarrhoeal Disease,2019,>=6 recorded months (training),228,156,0.057,persistence (own 12-month count),0.0986,0.6337
+Acute Diarrhoeal Disease,2019,>=6 recorded months (training),228,156,0.057,Season only,0.0721,0.5884
+Acute Diarrhoeal Disease,2019,>=6 recorded months (training),228,156,0.057,Season + st1,0.0737,0.5782
+Acute Diarrhoeal Disease,2019,>=6 recorded months (training),228,156,0.057,Season + state 3-month,0.0687,0.57
+Acute Diarrhoeal Disease,2019,>=6 recorded months (training),228,156,0.057,Season + both state features,0.0763,0.5825
+Acute Diarrhoeal Disease,2019,>=6 recorded months (training),228,156,0.057,Season + state + own history,0.126,0.6766
+Acute Diarrhoeal Disease,2019,>=12 recorded months (training),78,84,0.0897,persistence (own 12-month count),0.1135,0.5679
+Acute Diarrhoeal Disease,2019,>=12 recorded months (training),78,84,0.0897,Season only,0.1058,0.5741
+Acute Diarrhoeal Disease,2019,>=12 recorded months (training),78,84,0.0897,Season + st1,0.116,0.5829
+Acute Diarrhoeal Disease,2019,>=12 recorded months (training),78,84,0.0897,Season + state 3-month,0.1004,0.5384
+Acute Diarrhoeal Disease,2019,>=12 recorded months (training),78,84,0.0897,Season + both state features,0.1178,0.5761
+Acute Diarrhoeal Disease,2019,>=12 recorded months (training),78,84,0.0897,Season + state + own history,0.1488,0.6329
+Dengue,2016,all districts,795,143,0.015,persistence (own 12-month count),0.0696,0.6723
+Dengue,2016,all districts,795,143,0.015,Season only,0.0227,0.6245
+Dengue,2016,all districts,795,143,0.015,Season + st1,0.0442,0.6996
+Dengue,2016,all districts,795,143,0.015,Season + state 3-month,0.0264,0.6185
+Dengue,2016,all districts,795,143,0.015,Season + both state features,0.036,0.6821
+Dengue,2016,all districts,795,143,0.015,Season + state + own history,0.0809,0.7584
+Dengue,2016,>=6 recorded months (training),26,26,0.0833,persistence (own 12-month count),0.1073,0.4618
+Dengue,2016,>=6 recorded months (training),26,26,0.0833,Season only,0.1486,0.6853
+Dengue,2016,>=6 recorded months (training),26,26,0.0833,Season + st1,0.1917,0.6893
+Dengue,2016,>=6 recorded months (training),26,26,0.0833,Season + state 3-month,0.1516,0.656
+Dengue,2016,>=6 recorded months (training),26,26,0.0833,Season + both state features,0.1764,0.6653
+Dengue,2016,>=6 recorded months (training),26,26,0.0833,Season + state + own history,0.1971,0.608
+Dengue,2016,>=12 recorded months (training),5,9,0.15,persistence (own 12-month count),0.1977,0.3802
+Dengue,2016,>=12 recorded months (training),5,9,0.15,Season only,0.1787,0.5381
+Dengue,2016,>=12 recorded months (training),5,9,0.15,Season + st1,0.4272,0.5937
+Dengue,2016,>=12 recorded months (training),5,9,0.15,Season + state 3-month,0.3096,0.5893
+Dengue,2016,>=12 recorded months (training),5,9,0.15,Season + both state features,0.2785,0.4946
+Dengue,2016,>=12 recorded months (training),5,9,0.15,Season + state + own history,0.3365,0.4532
+Dengue,2017,all districts,795,134,0.014,persistence (own 12-month count),0.0795,0.7435
+Dengue,2017,all districts,795,134,0.014,Season only,0.0197,0.6277
+Dengue,2017,all districts,795,134,0.014,Season + st1,0.0522,0.7878
+Dengue,2017,all districts,795,134,0.014,Season + state 3-month,0.0528,0.7484
+Dengue,2017,all districts,795,134,0.014,Season + both state features,0.0633,0.7948
+Dengue,2017,all districts,795,134,0.014,Season + state + own history,0.1845,0.8624
+Dengue,2017,>=6 recorded months (training),38,49,0.1075,persistence (own 12-month count),0.1615,0.5891
+Dengue,2017,>=6 recorded months (training),38,49,0.1075,Season only,0.1517,0.641
+Dengue,2017,>=6 recorded months (training),38,49,0.1075,Season + st1,0.161,0.661
+Dengue,2017,>=6 recorded months (training),38,49,0.1075,Season + state 3-month,0.1972,0.705
+Dengue,2017,>=6 recorded months (training),38,49,0.1075,Season + both state features,0.2045,0.698
+Dengue,2017,>=6 recorded months (training),38,49,0.1075,Season + state + own history,0.294,0.7253
+Dengue,2017,>=12 recorded months (training),7,12,0.1429,persistence (own 12-month count),0.202,0.5098
+Dengue,2017,>=12 recorded months (training),7,12,0.1429,Season only,0.1602,0.5324
+Dengue,2017,>=12 recorded months (training),7,12,0.1429,Season + st1,0.2301,0.6117
+Dengue,2017,>=12 recorded months (training),7,12,0.1429,Season + state 3-month,0.3168,0.6678
+Dengue,2017,>=12 recorded months (training),7,12,0.1429,Season + both state features,0.288,0.6696
+Dengue,2017,>=12 recorded months (training),7,12,0.1429,Season + state + own history,0.2852,0.6551
+Dengue,2018,all districts,795,97,0.0102,persistence (own 12-month count),0.0472,0.7155
+Dengue,2018,all districts,795,97,0.0102,Season only,0.0152,0.6419
+Dengue,2018,all districts,795,97,0.0102,Season + st1,0.0445,0.7279
+Dengue,2018,all districts,795,97,0.0102,Season + state 3-month,0.0277,0.6985
+Dengue,2018,all districts,795,97,0.0102,Season + both state features,0.0464,0.7382
+Dengue,2018,all districts,795,97,0.0102,Season + state + own history,0.1127,0.8169
+Dengue,2018,>=6 recorded months (training),45,32,0.0593,persistence (own 12-month count),0.0875,0.6259
+Dengue,2018,>=6 recorded months (training),45,32,0.0593,Season only,0.0966,0.6606
+Dengue,2018,>=6 recorded months (training),45,32,0.0593,Season + st1,0.1583,0.7472
+Dengue,2018,>=6 recorded months (training),45,32,0.0593,Season + state 3-month,0.1197,0.6931
+Dengue,2018,>=6 recorded months (training),45,32,0.0593,Season + both state features,0.1523,0.7482
+Dengue,2018,>=6 recorded months (training),45,32,0.0593,Season + state + own history,0.2326,0.7474
+Dengue,2018,>=12 recorded months (training),9,8,0.0741,persistence (own 12-month count),0.0816,0.5256
+Dengue,2018,>=12 recorded months (training),9,8,0.0741,Season only,0.1435,0.6462
+Dengue,2018,>=12 recorded months (training),9,8,0.0741,Season + st1,0.2782,0.7006
+Dengue,2018,>=12 recorded months (training),9,8,0.0741,Season + state 3-month,0.1043,0.6212
+Dengue,2018,>=12 recorded months (training),9,8,0.0741,Season + both state features,0.2489,0.6831
+Dengue,2018,>=12 recorded months (training),9,8,0.0741,Season + state + own history,0.19,0.6581
+Dengue,2019,all districts,795,152,0.0159,persistence (own 12-month count),0.0642,0.6891
+Dengue,2019,all districts,795,152,0.0159,Season only,0.0309,0.7017
+Dengue,2019,all districts,795,152,0.0159,Season + st1,0.0742,0.7761
+Dengue,2019,all districts,795,152,0.0159,Season + state 3-month,0.0526,0.7415
+Dengue,2019,all districts,795,152,0.0159,Season + both state features,0.0796,0.7817
+Dengue,2019,all districts,795,152,0.0159,Season + state + own history,0.1268,0.84
+Dengue,2019,>=6 recorded months (training),48,48,0.0833,persistence (own 12-month count),0.1437,0.6598
+Dengue,2019,>=6 recorded months (training),48,48,0.0833,Season only,0.1418,0.6648
+Dengue,2019,>=6 recorded months (training),48,48,0.0833,Season + st1,0.2131,0.7081
+Dengue,2019,>=6 recorded months (training),48,48,0.0833,Season + state 3-month,0.1478,0.6487
+Dengue,2019,>=6 recorded months (training),48,48,0.0833,Season + both state features,0.2261,0.7169
+Dengue,2019,>=6 recorded months (training),48,48,0.0833,Season + state + own history,0.2588,0.7455
+Dengue,2019,>=12 recorded months (training),15,27,0.15,persistence (own 12-month count),0.2066,0.6035
+Dengue,2019,>=12 recorded months (training),15,27,0.15,Season only,0.2574,0.7088
+Dengue,2019,>=12 recorded months (training),15,27,0.15,Season + st1,0.264,0.6796
+Dengue,2019,>=12 recorded months (training),15,27,0.15,Season + state 3-month,0.1971,0.5959
+Dengue,2019,>=12 recorded months (training),15,27,0.15,Season + both state features,0.3125,0.6807
+Dengue,2019,>=12 recorded months (training),15,27,0.15,Season + state + own history,0.3108,0.7071

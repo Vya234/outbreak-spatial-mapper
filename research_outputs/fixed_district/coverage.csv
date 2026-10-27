@@ -1,0 +1,13 @@
+disease,test_period,cohort,districts,district_month_rows,positives,negatives,base_rate,months_in_period
+Acute Diarrhoeal Disease,2020,fixed: any record before and during test,89,1068,64,1004,0.0599250936329588,12
+Acute Diarrhoeal Disease,2020,fixed: >=6 any-record months before and during test,73,876,54,822,0.06164383561643835,12
+Acute Diarrhoeal Disease,2021,fixed: any record before and during test,152,1824,137,1687,0.07510964912280702,12
+Acute Diarrhoeal Disease,2021,fixed: >=6 any-record months before and during test,110,1320,105,1215,0.07954545454545454,12
+Acute Diarrhoeal Disease,2022_H1,fixed: any record before and during test,110,660,111,549,0.16818181818181818,6
+Acute Diarrhoeal Disease,2022_H1,fixed: >=6 any-record months before and during test,84,504,81,423,0.16071428571428573,6
+Dengue,2020,fixed: any record before and during test,89,1068,34,1034,0.031835205992509365,12
+Dengue,2020,fixed: >=6 any-record months before and during test,73,876,31,845,0.03538812785388128,12
+Dengue,2021,fixed: any record before and during test,152,1824,79,1745,0.04331140350877193,12
+Dengue,2021,fixed: >=6 any-record months before and during test,110,1320,65,1255,0.04924242424242424,12
+Dengue,2022_H1,fixed: any record before and during test,110,660,21,639,0.031818181818181815,6
+Dengue,2022_H1,fixed: >=6 any-record months before and during test,84,504,20,484,0.03968253968253968,6

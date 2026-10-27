@@ -1,0 +1,4 @@
+method,forecast_windows,future_points,pooled_coverage,mean_window_coverage,median_window_coverage,mean_predicted_radius_km,mean_predicted_circle_area_km2
+10% Daily Expansion,52.0,7835.0,1.0,1.0,1.0,942.5535868335446,2794268.948187549
+5% Daily Expansion,52.0,7835.0,1.0,1.0,1.0,749.1305534511378,1764838.731640757
+No Expansion,52.0,7835.0,0.9971920867900447,0.9976881042454813,1.0,555.7075200687308,971052.6788465591

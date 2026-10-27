@@ -1,0 +1,37 @@
+disease,test_period,cohort,model,districts,district_month_rows,positives,base_rate,PR_AUC,ROC_AUC
+Acute Diarrhoeal Disease,2020,fixed: any record before and during test,persistence (own 12-month count),89,1068,64,0.0599250936329588,0.06409222754350762,0.49943974103585653
+Acute Diarrhoeal Disease,2020,fixed: any record before and during test,Logistic Regression,89,1068,64,0.0599250936329588,0.048650220827885976,0.4083354083665338
+Acute Diarrhoeal Disease,2020,fixed: any record before and during test,GBM,89,1068,64,0.0599250936329588,0.05152825553808635,0.43828591882470114
+Acute Diarrhoeal Disease,2020,fixed: >=6 any-record months before and during test,persistence (own 12-month count),73,876,54,0.06164383561643835,0.06785178597953999,0.5187663332432189
+Acute Diarrhoeal Disease,2020,fixed: >=6 any-record months before and during test,Logistic Regression,73,876,54,0.06164383561643835,0.050529949680178585,0.4121609443993872
+Acute Diarrhoeal Disease,2020,fixed: >=6 any-record months before and during test,GBM,73,876,54,0.06164383561643835,0.0535733500386115,0.444816166531495
+Acute Diarrhoeal Disease,2021,fixed: any record before and during test,persistence (own 12-month count),152,1824,137,0.07510964912280702,0.10150531248841341,0.5736655143021561
+Acute Diarrhoeal Disease,2021,fixed: any record before and during test,Logistic Regression,152,1824,137,0.07510964912280702,0.10945281191704787,0.5803309117813766
+Acute Diarrhoeal Disease,2021,fixed: any record before and during test,GBM,152,1824,137,0.07510964912280702,0.11464854378366868,0.5861417711222358
+Acute Diarrhoeal Disease,2021,fixed: >=6 any-record months before and during test,persistence (own 12-month count),110,1320,105,0.07954545454545454,0.11026618593114756,0.5732431902802273
+Acute Diarrhoeal Disease,2021,fixed: >=6 any-record months before and during test,Logistic Regression,110,1320,105,0.07954545454545454,0.11759641666415233,0.5835782872819909
+Acute Diarrhoeal Disease,2021,fixed: >=6 any-record months before and during test,GBM,110,1320,105,0.07954545454545454,0.12320561372256303,0.5841583382324123
+Acute Diarrhoeal Disease,2022_H1,fixed: any record before and during test,persistence (own 12-month count),110,660,111,0.16818181818181818,0.19550787105839756,0.5275931669374293
+Acute Diarrhoeal Disease,2022_H1,fixed: any record before and during test,Logistic Regression,110,660,111,0.16818181818181818,0.22862730806491263,0.6616616616616616
+Acute Diarrhoeal Disease,2022_H1,fixed: any record before and during test,GBM,110,660,111,0.16818181818181818,0.2186596930949452,0.6359146031277179
+Acute Diarrhoeal Disease,2022_H1,fixed: >=6 any-record months before and during test,persistence (own 12-month count),84,504,81,0.16071428571428573,0.20106832866473037,0.5507398651606689
+Acute Diarrhoeal Disease,2022_H1,fixed: >=6 any-record months before and during test,Logistic Regression,84,504,81,0.16071428571428573,0.22357649700870696,0.6683156758018854
+Acute Diarrhoeal Disease,2022_H1,fixed: >=6 any-record months before and during test,GBM,84,504,81,0.16071428571428573,0.21531870838867417,0.6478708811254121
+Dengue,2020,fixed: any record before and during test,persistence (own 12-month count),89,1068,34,0.031835205992509365,0.07928977322133743,0.6691318693821823
+Dengue,2020,fixed: any record before and during test,Logistic Regression,89,1068,34,0.031835205992509365,0.08147075496987283,0.6893560131983161
+Dengue,2020,fixed: any record before and during test,GBM,89,1068,34,0.031835205992509365,0.10025611949850358,0.7086414836727729
+Dengue,2020,fixed: >=6 any-record months before and during test,persistence (own 12-month count),73,876,31,0.03538812785388128,0.08508816478629361,0.667608322198893
+Dengue,2020,fixed: >=6 any-record months before and during test,Logistic Regression,73,876,31,0.03538812785388128,0.08788842717948747,0.6998091238786027
+Dengue,2020,fixed: >=6 any-record months before and during test,GBM,73,876,31,0.03538812785388128,0.10719830830333832,0.7003244894063753
+Dengue,2021,fixed: any record before and during test,persistence (own 12-month count),152,1824,79,0.04331140350877193,0.09126325968620835,0.6321823655289979
+Dengue,2021,fixed: any record before and during test,Logistic Regression,152,1824,79,0.04331140350877193,0.1538811994946377,0.748942729679736
+Dengue,2021,fixed: any record before and during test,GBM,152,1824,79,0.04331140350877193,0.1748274434038828,0.7645315730296326
+Dengue,2021,fixed: >=6 any-record months before and during test,persistence (own 12-month count),110,1320,65,0.04924242424242424,0.10759591701989413,0.650321789764021
+Dengue,2021,fixed: >=6 any-record months before and during test,Logistic Regression,110,1320,65,0.04924242424242424,0.1784108370273922,0.7513699049954029
+Dengue,2021,fixed: >=6 any-record months before and during test,GBM,110,1320,65,0.04924242424242424,0.21404247329003995,0.7718725099601595
+Dengue,2022_H1,fixed: any record before and during test,persistence (own 12-month count),110,660,21,0.031818181818181815,0.06975696844394323,0.6676354422833296
+Dengue,2022_H1,fixed: any record before and during test,Logistic Regression,110,660,21,0.031818181818181815,0.0646500014563754,0.693792383933229
+Dengue,2022_H1,fixed: any record before and during test,GBM,110,660,21,0.031818181818181815,0.08796977608096546,0.7316491541843655
+Dengue,2022_H1,fixed: >=6 any-record months before and during test,persistence (own 12-month count),84,504,20,0.03968253968253968,0.07537529004138968,0.6518078512396694
+Dengue,2022_H1,fixed: >=6 any-record months before and during test,Logistic Regression,84,504,20,0.03968253968253968,0.07142870234738372,0.6676136363636364
+Dengue,2022_H1,fixed: >=6 any-record months before and during test,GBM,84,504,20,0.03968253968253968,0.09279474930079512,0.6970557851239669

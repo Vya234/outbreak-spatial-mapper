@@ -2,56 +2,230 @@ import numpy as np
 from scipy.integrate import odeint
 from scipy.optimize import minimize
 
+
 def sir_model_ode(y, t, N, beta, gamma):
     """
-    Standard SIR Compartmental ODE Model:
-    S = Susceptible, I = Infected, R = Recovered
+    Standard SIR compartmental model.
+
+    S: susceptible population
+    I: currently infectious population
+    R: recovered population
     """
     S, I, R = y
+
     dS_dt = -beta * S * I / N
-    dI_dt = (beta * S * I / N) - (gamma * I)
+    dI_dt = beta * S * I / N - gamma * I
     dR_dt = gamma * I
+
     return [dS_dt, dI_dt, dR_dt]
 
-def optimize_sir_parameters(daily_cases, initial_population=100000):
+
+def _validate_daily_counts(daily_cases):
+    """Validate a sequence of non-negative daily logged counts."""
+    values = np.asarray(daily_cases, dtype=float)
+
+    if values.ndim != 1 or len(values) < 3:
+        raise ValueError(
+            "At least 3 daily observations are required."
+        )
+
+    if not np.all(np.isfinite(values)):
+        raise ValueError("Daily observations must be finite.")
+
+    if np.any(values < 0):
+        raise ValueError(
+            "Daily observations cannot be negative."
+        )
+
+    cumulative = np.cumsum(values)
+
+    if cumulative[-1] <= 0:
+        raise ValueError(
+            "At least one positive observation is required."
+        )
+
+    return values, cumulative
+
+
+def _simulate_sir(N, beta, gamma, initial_infected, t):
+    """Simulate an SIR trajectory from its initial conditions."""
+    if N <= initial_infected or initial_infected <= 0:
+        raise ValueError(
+            "Population N must exceed the positive initial infected count."
+        )
+
+    S0 = N - initial_infected
+    I0 = initial_infected
+    R0 = 0.0
+
+    return odeint(
+        sir_model_ode,
+        [S0, I0, R0],
+        t,
+        args=(N, beta, gamma),
+    )
+
+
+def optimize_sir_parameters(
+    daily_cases,
+    initial_population=100000,
+):
     """
-    Uses gradient-based optimization (L-BFGS-B via scipy.optimize.minimize) 
-    to dynamically estimate the population catchment N, transmission rate beta, 
-    and recovery rate gamma from actual historical case curves.
+    Fit SIR parameters to cumulative observed counts.
+
+    IMPORTANT:
+    This fitting procedure assumes daily logged locations are a
+    proxy for new infections. That assumption must be validated
+    before interpreting the estimates epidemiologically.
+
+    Returns:
+        optimized_N
+        optimized_beta
+        optimized_gamma
+        success
     """
-    t = np.arange(len(daily_cases))
-    actual_cumulative = np.cumsum(daily_cases)
-    
+    values, actual_cumulative = _validate_daily_counts(daily_cases)
+
+    initial_infected = float(actual_cumulative[0])
+
+    if not np.isfinite(initial_population) or initial_population <= 0:
+        raise ValueError("initial_population must be positive.")
+
+    # The fitted population must exceed the cumulative observations.
+    lower_N = max(
+        1000.0,
+        float(actual_cumulative[-1]) + 1.0,
+    )
+    upper_N = 1e7
+
+    if lower_N >= upper_N:
+        raise ValueError(
+            "Observed cumulative count is too large for the "
+            "configured population bounds."
+        )
+
+    initial_N = min(
+        max(float(initial_population), lower_N + 1.0),
+        upper_N,
+    )
+
+    t = np.arange(len(values), dtype=float)
+
     def loss_function(params):
         N, beta, gamma = params
-        if N <= max(actual_cumulative) or beta < 0 or gamma < 0:
-            return 1e15
-            
-        I0 = max(1.0, actual_cumulative[0])
-        S0 = N - I0
-        R0 = 0.0
-        
-        y0 = [S0, I0, R0]
-        solution = odeint(sir_model_ode, y0, t, args=(N, beta, gamma))
-        predicted_cumulative = solution[:, 1] + solution[:, 2]
-        
-        mse = np.mean((predicted_cumulative - actual_cumulative) ** 2)
-        return mse
 
-    initial_guess = [float(initial_population), 0.3, 0.1]
-    bounds = [(1000, 1e7), (0.01, 2.0), (0.001, 1.0)]
-    
-    result = minimize(loss_function, initial_guess, method='L-BFGS-B', bounds=bounds)
-    
+        try:
+            solution = _simulate_sir(
+                N,
+                beta,
+                gamma,
+                initial_infected,
+                t,
+            )
+
+            # I + R represents cumulative infections in the SIR model.
+            predicted_cumulative = solution[:, 1] + solution[:, 2]
+
+            if not np.all(np.isfinite(predicted_cumulative)):
+                return 1e30
+
+            errors = predicted_cumulative - actual_cumulative
+            return float(np.mean(errors ** 2))
+
+        except (ValueError, FloatingPointError):
+            return 1e30
+
+    result = minimize(
+        loss_function,
+        x0=[initial_N, 0.3, 0.1],
+        method="L-BFGS-B",
+        bounds=[
+            (lower_N, upper_N),
+            (0.01, 2.0),
+            (0.001, 1.0),
+        ],
+    )
+
+    # Do not report a successful fit if the result is invalid.
+    if not np.isfinite(result.fun) or result.fun >= 1e29:
+        raise RuntimeError("SIR optimization produced an invalid fit.")
+
     opt_N, opt_beta, opt_gamma = result.x
+
     return {
-        "optimized_N": round(opt_N, 2),
-        "optimized_beta": round(opt_beta, 4),
-        "optimized_gamma": round(opt_gamma, 4),
-        "success": result.success
+        "optimized_N": round(float(opt_N), 2),
+        "optimized_beta": round(float(opt_beta), 4),
+        "optimized_gamma": round(float(opt_gamma), 4),
+        "success": bool(result.success),
+        "fit_mse": round(float(result.fun), 4),
     }
+
+
+def forecast_sir_cumulative(
+    daily_cases,
+    forecast_horizon,
+    population,
+    beta,
+    gamma,
+):
+    """
+    Continue an SIR trajectory from the beginning of the observed
+    series through the requested forecast horizon.
+
+    The returned value is the model's cumulative infected count
+    (I + R) at the end of the forecast horizon.
+
+    This is a prototype estimate, not a validated prediction of
+    actual disease incidence when inputs are logged locations.
+    """
+    values, _ = _validate_daily_counts(daily_cases)
+
+    if not isinstance(forecast_horizon, (int, np.integer)):
+        raise ValueError("forecast_horizon must be an integer.")
+
+    if forecast_horizon < 0:
+        raise ValueError("forecast_horizon cannot be negative.")
+
+    if population <= 0 or beta <= 0 or gamma <= 0:
+        raise ValueError(
+            "Population, beta, and gamma must be positive."
+        )
+
+    initial_infected = float(values[0])
+
+    # Continue the same trajectory used for fitting.
+    final_t = len(values) - 1 + forecast_horizon
+    t = np.arange(final_t + 1, dtype=float)
+
+    solution = _simulate_sir(
+        float(population),
+        float(beta),
+        float(gamma),
+        initial_infected,
+        t,
+    )
+
+    predicted_cumulative = solution[-1, 1] + solution[-1, 2]
+
+    if not np.isfinite(predicted_cumulative):
+        raise RuntimeError("SIR forecast produced a non-finite result.")
+
+    return float(predicted_cumulative)
+
 
 if __name__ == "__main__":
     sample_cases = [1, 2, 5, 12, 25, 45, 70, 110, 150, 180, 200]
-    res = optimize_sir_parameters(sample_cases)
-    print("Optimization Result:", res)
+
+    result = optimize_sir_parameters(sample_cases)
+    print("Optimization result:", result)
+
+    if result["success"]:
+        forecast = forecast_sir_cumulative(
+            daily_cases=sample_cases,
+            forecast_horizon=7,
+            population=result["optimized_N"],
+            beta=result["optimized_beta"],
+            gamma=result["optimized_gamma"],
+        )
+
+        print("7-day cumulative model estimate:", round(forecast, 2))
