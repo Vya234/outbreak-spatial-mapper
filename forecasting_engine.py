@@ -71,27 +71,20 @@ def optimize_sir_parameters(
     initial_population=100000,
 ):
     """
-    Fit SIR parameters to cumulative observed counts.
+    Fit SIR parameters to cumulative observed counts using
+    bounded multi-start optimization.
 
     IMPORTANT:
-    This fitting procedure assumes daily logged locations are a
-    proxy for new infections. That assumption must be validated
-    before interpreting the estimates epidemiologically.
-
-    Returns:
-        optimized_N
-        optimized_beta
-        optimized_gamma
-        success
+    Daily logged locations are not necessarily new infections.
+    The fitted parameters are exploratory and must not be interpreted
+    epidemiologically without validating that assumption.
     """
     values, actual_cumulative = _validate_daily_counts(daily_cases)
-
     initial_infected = float(actual_cumulative[0])
 
     if not np.isfinite(initial_population) or initial_population <= 0:
         raise ValueError("initial_population must be positive.")
 
-    # The fitted population must exceed the cumulative observations.
     lower_N = max(
         1000.0,
         float(actual_cumulative[-1]) + 1.0,
@@ -104,11 +97,6 @@ def optimize_sir_parameters(
             "configured population bounds."
         )
 
-    initial_N = min(
-        max(float(initial_population), lower_N + 1.0),
-        upper_N,
-    )
-
     t = np.arange(len(values), dtype=float)
 
     def loss_function(params):
@@ -116,17 +104,14 @@ def optimize_sir_parameters(
 
         try:
             solution = _simulate_sir(
-                N,
-                beta,
-                gamma,
-                initial_infected,
-                t,
+                N, beta, gamma, initial_infected, t
             )
-
-            # I + R represents cumulative infections in the SIR model.
             predicted_cumulative = solution[:, 1] + solution[:, 2]
 
-            if not np.all(np.isfinite(predicted_cumulative)):
+            if (
+                not np.all(np.isfinite(predicted_cumulative))
+                or np.any(predicted_cumulative < -1e-6)
+            ):
                 return 1e30
 
             errors = predicted_cumulative - actual_cumulative
@@ -135,29 +120,58 @@ def optimize_sir_parameters(
         except (ValueError, FloatingPointError):
             return 1e30
 
-    result = minimize(
-        loss_function,
-        x0=[initial_N, 0.3, 0.1],
-        method="L-BFGS-B",
-        bounds=[
-            (lower_N, upper_N),
-            (0.01, 2.0),
-            (0.001, 1.0),
-        ],
-    )
+    # Try diverse initial values to reduce dependence on one start.
+    population_starts = sorted(set([
+        min(max(float(initial_population), lower_N + 1.0), upper_N),
+        min(max(float(actual_cumulative[-1] * 1.05), lower_N + 1.0), upper_N),
+        min(max(float(actual_cumulative[-1] * 1.5), lower_N + 1.0), upper_N),
+        min(max(float(actual_cumulative[-1] * 3.0), lower_N + 1.0), upper_N),
+        min(max(float(actual_cumulative[-1] * 10.0), lower_N + 1.0), upper_N),
+    ]))
 
-    # Do not report a successful fit if the result is invalid.
-    if not np.isfinite(result.fun) or result.fun >= 1e29:
-        raise RuntimeError("SIR optimization produced an invalid fit.")
+    rate_starts = [
+        (0.1, 0.05),
+        (0.3, 0.1),
+        (0.5, 0.2),
+        (0.8, 0.4),
+        (1.2, 0.6),
+        (1.5, 0.9),
+    ]
 
-    opt_N, opt_beta, opt_gamma = result.x
+    candidates = []
+
+    for start_N in population_starts:
+        for start_beta, start_gamma in rate_starts:
+            result = minimize(
+                loss_function,
+                x0=[start_N, start_beta, start_gamma],
+                method="L-BFGS-B",
+                bounds=[
+                    (lower_N, upper_N),
+                    (0.01, 2.0),
+                    (0.001, 1.0),
+                ],
+                options={"maxiter": 3000, "ftol": 1e-12},
+            )
+
+            if result.success and np.isfinite(result.fun) and result.fun < 1e29:
+                candidates.append(result)
+
+    if not candidates:
+        raise RuntimeError("All SIR optimization attempts failed.")
+
+    # Select the candidate with the lowest objective value.
+    best = min(candidates, key=lambda result: result.fun)
+    opt_N, opt_beta, opt_gamma = best.x
 
     return {
         "optimized_N": round(float(opt_N), 2),
         "optimized_beta": round(float(opt_beta), 4),
         "optimized_gamma": round(float(opt_gamma), 4),
-        "success": bool(result.success),
-        "fit_mse": round(float(result.fun), 4),
+        "success": bool(best.success),
+        "fit_mse": round(float(best.fun), 4),
+        "successful_starts": sum(r.success for r in candidates),
+        "total_starts": len(candidates),
     }
 
 

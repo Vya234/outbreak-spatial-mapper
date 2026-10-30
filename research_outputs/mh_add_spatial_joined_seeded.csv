@@ -1,0 +1,35 @@
+dt_code,boundary_district,st_nm,st_code,year,district_key,median_cases,mean_cases,total_recorded_cases,observations,district,local_moran_I,local_p_sim,spatial_lag_z,significant_05,lisa_cluster
+522,Ahmednagar,Maharashtra,27,2011_c,ahmednagar,36.0,48.53333333333333,728,15,Ahmednagar,-0.16159590338279542,0.0037,-2.830291753548088,True,Low-High
+501,Akola,Maharashtra,27,2011_c,akola,27.0,30.125,241,8,Akola,0.07451601809765196,0.4837,0.2744905501590919,False,Not significant
+503,Amravati,Maharashtra,27,2011_c,amravati,30.0,38.095238095238095,800,21,Amravati,0.15373203625690673,0.1055,1.0585655762420734,False,Not significant
+515,Aurangabad,Maharashtra,27,2011_c,aurangabad,78.0,73.44444444444444,661,9,Aurangabad,0.0032450011689120896,0.3127,0.1478709414313577,False,Not significant
+523,Beed,Maharashtra,27,2011_c,beed,29.0,37.7,377,10,Beed,-0.07660820104915622,0.2491,-0.4567574799965265,False,Not significant
+506,Bhandara,Maharashtra,27,2011_c,bhandara,23.0,45.07692307692308,586,13,Bhandara,-0.07515563738965803,0.2925,-0.21415391942850856,False,Not significant
+500,Buldhana,Maharashtra,27,2011_c,buldhana,35.0,35.0,70,2,Buldhana,0.02065107998618159,0.4629,0.29908503508783374,False,Not significant
+509,Chandrapur,Maharashtra,27,2011_c,chandrapur,68.0,63.111111111111114,568,9,Chandrapur,-0.6088275258893202,0.0207,-1.3343897966824445,True,High-Low
+498,Dhule,Maharashtra,27,2011_c,dhule,22.5,35.142857142857146,492,14,Dhule,-0.22992836525741167,0.177,-0.5897936256229006,False,Not significant
+508,Gadchiroli,Maharashtra,27,2011_c,gadchiroli,28.5,34.916666666666664,419,12,Gadchiroli,-0.027339833654129633,0.3349,-0.09893588960806432,False,Not significant
+507,Gondia,Maharashtra,27,2011_c,gondia,35.0,55.2,276,5,Gondia,0.11740894499460812,0.1296,0.8201900116711534,False,Not significant
+512,Hingoli,Maharashtra,27,2011_c,hingoli,17.0,17.0,17,1,Hingoli,0.30784058074132103,0.123,0.9971064955701809,False,Not significant
+499,Jalgaon,Maharashtra,27,2011_c,jalgaon,33.0,44.526315789473685,846,19,Jalgaon,-0.1331609862012949,0.1369,-1.0040914765260551,False,Not significant
+514,Jalna,Maharashtra,27,2011_c,jalna,35.0,38.61538461538461,502,13,Jalna,0.01311595421561386,0.466,0.15514919652507286,False,Not significant
+530,Kolhapur,Maharashtra,27,2011_c,kolhapur,45.0,85.88,2147,25,Kolhapur,-0.021925569109184372,0.4691,-0.20408964706540825,False,Not significant
+524,Latur,Maharashtra,27,2011_c,latur,49.0,52.7,527,10,Latur,-0.1092557842659834,0.2563,-0.6807891463938328,False,Not significant
+505,Nagpur,Maharashtra,27,2011_c,nagpur,42.0,55.92307692307692,1454,26,Nagpur,-0.011599227455477408,0.4189,-0.39793350641162684,False,Not significant
+511,Nanded,Maharashtra,27,2011_c,nanded,26.0,40.44444444444444,728,18,Nanded,0.2532803457392004,0.0948,1.0091985108607722,False,Not significant
+497,Nandurbar,Maharashtra,27,2011_c,nandurbar,39.5,52.5,525,10,Nandurbar,0.024801261870462287,0.153,0.6889408448798825,False,Not significant
+516,Nashik,Maharashtra,27,2011_c,nashik,75.0,102.56,2564,25,Nashik,-0.24657794871510538,0.429,-0.38879673950446925,False,Not significant
+525,Osmanabad,Maharashtra,27,2011_c,osmanabad,37.0,76.1,761,10,Osmanabad,-0.14181696964432727,0.0427,-2.317405173935628,True,Low-High
+732,Palghar,Maharashtra,27,update2014,palghar,19.0,29.0,87,3,Palghar,-0.30102658650918546,0.2,-0.5144613013220765,False,Not significant
+513,Parbhani,Maharashtra,27,2011_c,parbhani,35.0,45.61538461538461,593,13,Parbhani,0.07385363466928101,0.1737,0.8627667268885435,False,Not significant
+521,Pune,Maharashtra,27,2011_c,pune,52.5,80.0,1280,16,Pune,0.3605864611352956,0.068,1.9414977787753265,False,Not significant
+520,Raigad,Maharashtra,27,2011_c,raigad,49.0,49.5,891,18,Raigad,-0.07625720983031833,0.3839,-0.4617826597972154,False,Not significant
+528,Ratnagiri,Maharashtra,27,2011_c,ratnagiri,26.0,29.23076923076923,380,13,Ratnagiri,-0.047911158996971966,0.3178,-0.18084057417131788,False,Not significant
+531,Sangli,Maharashtra,27,2011_c,sangli,53.0,57.95454545454545,1275,22,Sangli,0.4760679719978602,0.0572,2.1715647361470927,False,Not significant
+527,Satara,Maharashtra,27,2011_c,satara,34.0,51.68421052631579,982,19,Satara,-0.2616680511881781,0.0198,-2.5554422727633725,True,Low-High
+529,Sindhudurg,Maharashtra,27,2011_c,sindhudurg,32.5,62.333333333333336,374,6,Sindhudurg,0.05763244049406621,0.4819,0.2794800266110875,False,Not significant
+526,Solapur,Maharashtra,27,2011_c,solapur,160.0,117.0,351,3,Solapur,0.36153683735861075,0.1951,0.87005534994232,False,Not significant
+517,Thane,Maharashtra,27,2011_c,thane,25.0,48.310344827586206,1401,29,Thane,-0.1328747933613195,0.2262,-0.5023067029849211,False,Not significant
+504,Wardha,Maharashtra,27,2011_c,wardha,20.5,56.5,339,6,Wardha,0.06417707675916617,0.4904,0.22046057844740494,False,Not significant
+502,Washim,Maharashtra,27,2011_c,washim,45.0,45.0,45,1,Washim,-0.1074090304684057,0.0112,-1.459861435167485,True,High-Low
+510,Yavatmal,Maharashtra,27,2011_c,yavatmal,13.0,18.952380952380953,398,21,Yavatmal,0.24281540755292658,0.2559,0.712579124081162,False,Not significant

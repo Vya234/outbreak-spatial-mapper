@@ -67,21 +67,23 @@ LABELS = {
     "st1": "Other districts in state: last month", "st_any3": "State activity, any disease, 3 months",
     "sin": "Season (sin of month)", "cos": "Season (cos of month)",
 }
-fig, axes = plt.subplots(1, len(DISEASES), figsize=(12, 4.8), sharex=False)
+# Stacked panels, larger fonts: the figure is printed at about 17 cm wide, so text sizes here are what you see on paper.
+fig, axes = plt.subplots(len(DISEASES), 1, figsize=(8.5, 4.7 * len(DISEASES)))
 axes = np.atleast_1d(axes)
 for ax, disease in zip(axes, DISEASES):
     d = imp[imp.disease == disease].sort_values("pr_auc_drop")
     colors = ["#c62828" if v < 0 else "#1976d2" for v in d.pr_auc_drop]
     ax.barh([LABELS.get(f, f) for f in d.feature], d.pr_auc_drop, xerr=d["std"], color=colors,
-            edgecolor="black", linewidth=0.4, capsize=2)
-    ax.axvline(0, color="black", lw=0.8)
-    ax.set_title(disease, fontsize=10)
-    ax.set_xlabel("Drop in PR-AUC when feature is shuffled", fontsize=9)
-    ax.tick_params(axis="y", labelsize=8)
+            edgecolor="black", linewidth=0.5, capsize=3, height=0.7)
+    ax.axvline(0, color="black", lw=0.9)
+    ax.set_title(disease, fontsize=13, fontweight="bold")
+    ax.set_xlabel("Drop in PR-AUC when feature is shuffled", fontsize=11)
+    ax.tick_params(axis="y", labelsize=10.5)
+    ax.tick_params(axis="x", labelsize=10)
     ax.spines[["top", "right"]].set_visible(False)
-fig.suptitle(f"Permutation importance, test year {int(imp.test_year.iloc[0])} "
-             "(predictors of REPORTED occurrence, not causes of spread)", fontsize=11)
-fig.tight_layout(rect=[0, 0, 1, 0.94])
+fig.suptitle(f"Permutation importance, test year {int(imp.test_year.iloc[0])}\n"
+             "(predictors of REPORTED occurrence, not causes of spread)", fontsize=12)
+fig.tight_layout(rect=[0, 0, 1, 0.95])
 fig.savefig(OUT / "occurrence_fig_importance.png", dpi=200)
 plt.close(fig)
 print("wrote", OUT / "occurrence_fig_models.png", "and", OUT / "occurrence_fig_importance.png")
